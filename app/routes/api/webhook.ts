@@ -71,7 +71,7 @@ export const action: ActionFunction = async ({request, params}) => {
 
     const version = (last?.version ?? 0) + 1
 
-    const createResult = await SnapshotModel.create({
+    await SnapshotModel.create({
         space,
         contentType,
         environment,

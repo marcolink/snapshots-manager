@@ -11,6 +11,7 @@ export type Snapshot = {
     space: string
     environment: string
     contentType: string
+    state: string
 }
 
 export type PatchGroup = {
