@@ -1,32 +1,24 @@
+import {useNavigate} from "remix";
+import {useInBrowser} from "~/utils/useInBrowser";
+
+const locations = [
+    "app-config",
+    "entry-field",
+    "entry-editor",
+    "entry-sidebar",
+    "dialog",
+    "page"
+];
+
 export default function Index() {
-  return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
-      <h1>Welcome to Remix</h1>
-      <ul>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/blog"
-            rel="noreferrer"
-          >
-            15m Quickstart Blog Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            target="_blank"
-            href="https://remix.run/tutorials/jokes"
-            rel="noreferrer"
-          >
-            Deep Dive Jokes App Tutorial
-          </a>
-        </li>
-        <li>
-          <a target="_blank" href="https://remix.run/docs" rel="noreferrer">
-            Remix Docs
-          </a>
-        </li>
-      </ul>
-    </div>
-  );
+    let navigate = useNavigate();
+    useInBrowser(() => {
+        const isLocation = window.__SDK__.location.is;
+        for (const location of locations) {
+            if (isLocation(location)) {
+                return navigate(location);
+            }
+        }
+    })
+    return null;
 }
