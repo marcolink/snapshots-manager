@@ -1,10 +1,10 @@
-import {LoaderFunction} from "remix";
+import {ActionFunction} from "remix";
 
-export const loader:LoaderFunction = ({ request,params }) =>  {
+// POST Request
+export const action: ActionFunction = ({request, params}) => {
     console.log(request, params)
     return new Response(null, {
         status: 200,
-        headers: {
-        }
+        headers: {}
     });
 }
