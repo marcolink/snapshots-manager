@@ -1,24 +1,26 @@
-import type {PageExtensionSDK} from "@contentful/app-sdk";
+import type {IdsAPI, PageExtensionSDK} from "@contentful/app-sdk";
 import {Paragraph} from "@contentful/f36-components";
-import {LoaderFunction} from "remix";
+import {Workbench} from '@contentful/f36-workbench';
+import {useFetcher} from "@remix-run/react";
+import {useInBrowser} from "~/utils/useInBrowser";
 import {useSdk} from "~/utils/useSdk";
-import { Workbench } from '@contentful/f36-workbench';
-
-export const loader: LoaderFunction = ({request, params}) => {
-    return new Response(
-        JSON.stringify(
-            {
-                method: request.method
-            }
-        ), {
-            status: 200,
-            headers: {}
-        }
-    );
-}
 
 export default function Index() {
     const {cma, sdk} = useSdk<PageExtensionSDK>();
+    const fetcher = useFetcher();
+
+    useInBrowser(() => fetcher.load(`/api/${sdk?.ids.space}/${sdk?.ids.environment}`))
+
+    /*
+    fetcher.state;
+    fetcher.type;
+    fetcher.submission;
+    fetcher.data;
+     */
+
+    console.log(fetcher.type)
+    console.log(fetcher.state)
+
     return (
         <Workbench>
             <Workbench.Header

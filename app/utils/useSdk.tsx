@@ -1,3 +1,6 @@
+// regenerator-runtime has to be the first import!
+import "regenerator-runtime/runtime.js";
+
 import type {KnownSDK} from "@contentful/app-sdk";
 import {BaseExtensionSDK} from "@contentful/app-sdk/dist/types/api.types";
 import type {PlainClientAPI} from "contentful-management";
@@ -8,6 +11,7 @@ import {useInBrowser} from "~/utils/useInBrowser";
 export function useSdk<T extends BaseExtensionSDK = KnownSDK>() {
     const [sdk, setSdk] = useState<T>()
     const [cma, setCma] = useState<PlainClientAPI>()
+
 
     useInBrowser(() => {
         const globalSDK = window.__SDK__

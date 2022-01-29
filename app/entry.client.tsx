@@ -3,8 +3,6 @@ import {hydrate, render} from "react-dom";
 import { RemixBrowser } from "remix";
 import LocalhostWarning from "./components/LocalhostWarning";
 
-import "regenerator-runtime/runtime.js";
-
 init((sdk: KnownSDK) => {
     if (process.env.NODE_ENV === 'development' && window.self === window.top) {
         console.log("render warning")
