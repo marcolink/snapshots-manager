@@ -1,5 +1,7 @@
 import {ContentTypeProps} from "contentful-management";
 import {ActionFunction, LoaderFunction} from "remix";
+import connection from '~/database/connection'
+import {SnapshotModel} from "~/database/models";
 
 export const loader: LoaderFunction = ({request, params}) => {
     return new Response(
@@ -43,23 +45,45 @@ export const action: ActionFunction = async ({request, params}) => {
     }
 
     const action = rawTopic.split('.')[2]
+    const data: ContentTypeProps = await request.json()
+    const space = data.sys.space.sys.id
+    const environment = data.sys.environment.sys.id
+    const contentType = data.sys.id
 
-    const contentType: ContentTypeProps = await request.json()
-    const space = contentType.sys.space.sys.id
-    const environment = contentType.sys.environment.sys.id
-    const contentTypeId = contentType.sys.id
+    if (["create", "save", "unpublish", "delete"].includes(action)) {
+        return new Response(
+            null,
+            {
+                status: 200,
+                headers: {}
+            }
+        );
+    }
 
-    console.log(contentType)
+    await connection()
 
+    const last = (
+        await SnapshotModel
+            .find({space, environment, contentType})
+            .sort('-createdAt')
+            .limit(1)
+    )[0]
+
+    const version = (last?.version ?? 0) + 1
+
+    const createResult = await SnapshotModel.create({
+        space,
+        contentType,
+        environment,
+        version,
+        state: JSON.stringify(data)
+    })
 
     return new Response(
         JSON.stringify(
             {
-                method: request.method,
+                version,
                 action,
-                space,
-                environment,
-                contentTypeId
             }
         ), {
             status: 200,
