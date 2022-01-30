@@ -1,6 +1,7 @@
 import {LoaderFunction} from "remix";
 import connection from "~/database/connection";
 import {SnapshotModel} from "~/database/models";
+import {successResponse} from "~/utils/success-response";
 
 export const loader: LoaderFunction = async ({params}) => {
     const {space, environment, contentType} = params
@@ -14,22 +15,7 @@ export const loader: LoaderFunction = async ({params}) => {
     )[0]
 
     if (!first) {
-        return new Response(
-            JSON.stringify({
-                    message: "no version found",
-                    details: params
-                }
-            ), {
-                status: 200,
-                headers: {}
-            }
-        );
+        return successResponse({message: "no version found", details: params})
     }
-
-    return new Response(
-        first.state, {
-            status: 200,
-            headers: {}
-        }
-    );
+    return successResponse(first.state)
 }
