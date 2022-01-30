@@ -4,6 +4,7 @@ import {WebhookHeaders} from "~/constants";
 import {updateVersionHandler} from "~/logic/handler-update-version";
 import {errorResponse, WebhookResponseError} from "~/utils/error-response";
 import {extractRequestData} from "~/utils/extract-request-data";
+import {successResponse} from "~/utils/success-response";
 
 export const action: ActionFunction = async ({request, params}) => {
     if (!request.headers.has(WebhookHeaders.Name)) {
@@ -24,15 +25,6 @@ export const action: ActionFunction = async ({request, params}) => {
     const action = rawTopic.split('.')[2]
     const {space, environment, contentType, payload} = await extractRequestData<ContentTypeProps>(request)
 
-    if (["create", "save", "unpublish", "delete"].includes(action)) {
-        return new Response(
-            null,
-            {
-                status: 200,
-                headers: {}
-            }
-        );
-    }
-
+    if (["create", "save", "unpublish", "delete"].includes(action)) return successResponse();
     return updateVersionHandler({space, environment, contentType, payload})
 }
