@@ -1,5 +1,3 @@
-// regenerator-runtime has to be the first import!
-
 import {BaseAppSDK} from "@contentful/app-sdk/dist/types/api.types";
 import type {PlainClientAPI} from "contentful-management";
 import * as contentfulManagement from "contentful-management";
@@ -9,10 +7,8 @@ import {useInBrowser} from "~/hooks/useInBrowser";
 export function useInBrowserSdk<T extends BaseAppSDK>() {
   const [sdk, setSdk] = useState<T>()
   const [cma, setCma] = useState<PlainClientAPI>()
-
+  const globalSDK = window.__SDK__
   useInBrowser(() => {
-    const globalSDK = window.__SDK__
-
     if (!globalSDK) {
       console.error("SDK not available!");
       return;
@@ -31,7 +27,7 @@ export function useInBrowserSdk<T extends BaseAppSDK>() {
     );
     setSdk((globalSDK as unknown as T));
     setCma(cma);
-  })
+  }, [globalSDK])
 
   return {sdk, cma}
 }
