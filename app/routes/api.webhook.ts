@@ -63,6 +63,7 @@ export const action: ActionFunction = async ({request}) => {
       operation: operation,
       space: entry.sys.space.sys.id,
       environment: entry.sys.environment.sys.id,
+      byUser: entry.sys.updatedBy.sys.id || entry.sys.createBy.sys.id
     })
   }
 

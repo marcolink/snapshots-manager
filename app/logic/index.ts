@@ -9,9 +9,17 @@ export const createEntry = async (
     space: string,
     environment: string,
     raw: EntryProps,
-    operation: string
+    operation: string,
+    byUser: string
   }
 ) => {
+
+  // const s = await db.query.entries.findFirst({
+  //   where: and(
+  //     eq(entries.space, data.space),
+  //     eq(entries.environment, data.environment)
+  //   )})
+
   const storedEntries = await db
     .select()
     .from(entries)
@@ -44,6 +52,7 @@ export const createEntry = async (
     environment: data.environment,
     raw_entry: data.raw,
     operation: data.operation,
-    patch: patch
+    byUser: data.byUser,
+    patch: patch,
   }).execute();
 }

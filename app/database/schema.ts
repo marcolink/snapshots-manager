@@ -2,6 +2,7 @@ import { jsonb, pgTable, serial, text, timestamp, integer } from 'drizzle-orm/pg
 
 export const entries = pgTable('entry_table', {
   id: serial('id').primaryKey(),
+  byUser: text('by_user').notNull().default('unknown'),
   version: integer('version').notNull(),
   space: text('space').notNull(),
   environment: text('environment').notNull(),
