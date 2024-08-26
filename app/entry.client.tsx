@@ -7,12 +7,17 @@
 import { RemixBrowser } from "@remix-run/react";
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
+import {init, KnownSDK} from "@contentful/app-sdk";
 
 startTransition(() => {
-  hydrateRoot(
-    document,
-    <StrictMode>
-      <RemixBrowser />
-    </StrictMode>
-  );
+  init((sdk: KnownSDK) => {
+    console.log({sdk})
+    window.__SDK__ = sdk
+    hydrateRoot(
+      document,
+      <StrictMode>
+        <RemixBrowser />
+      </StrictMode>
+    );
+  })
 });
