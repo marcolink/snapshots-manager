@@ -21,10 +21,7 @@ export const loader = async () => {
 }
 
 export default function Index() {
-
   const sdk = useInBrowserSdk()
-
-  console.log({sdk})
 
   const {data} = useLoaderData<typeof loader>()
 

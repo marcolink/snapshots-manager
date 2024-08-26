@@ -35,7 +35,6 @@ export const action: ActionFunction = async ({request}) => {
     return errorResponse(new WebhookResponseError('Wrong webhook'))
   }
 
-
   return new Response('Hello, world!', {
     headers: {
       'Content-Type': 'text/plain'

@@ -13,7 +13,6 @@ export function useInBrowserSdk<T extends BaseAppSDK>() {
   useInBrowser(() => {
     const globalSDK = window.__SDK__
 
-    // Should we switch to stand-alone app?
     if (!globalSDK) {
       console.error("SDK not available!");
       return;
@@ -24,6 +23,7 @@ export function useInBrowserSdk<T extends BaseAppSDK>() {
       {
         type: 'plain',
         defaults: {
+          organizationId: globalSDK.ids.organization,
           environmentId: globalSDK.ids.environment,
           spaceId: globalSDK.ids.space,
         },
