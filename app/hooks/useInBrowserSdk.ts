@@ -7,12 +7,14 @@ import {useInBrowser} from "~/hooks/useInBrowser";
 export function useInBrowserSdk<T extends BaseAppSDK>() {
   const [sdk, setSdk] = useState<T>()
   const [cma, setCma] = useState<PlainClientAPI>()
-  const globalSDK = window.__SDK__
   useInBrowser(() => {
+    const globalSDK = window?.__SDK__
     if (!globalSDK) {
       console.error("SDK not available!");
       return;
     }
+
+    console.count("SDK loaded");
 
     const cma = contentfulManagement.createClient(
       {apiAdapter: globalSDK.cmaAdapter},
@@ -27,7 +29,7 @@ export function useInBrowserSdk<T extends BaseAppSDK>() {
     );
     setSdk((globalSDK as unknown as T));
     setCma(cma);
-  }, [globalSDK])
+  }, [])
 
   return {sdk, cma}
 }

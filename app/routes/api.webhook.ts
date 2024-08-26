@@ -1,9 +1,10 @@
-import {ActionFunction} from "@remix-run/node";
+import {ActionFunction, json} from "@remix-run/node";
 import {z} from "zod";
+import {createEntry} from "~/logic";
 
 export const ContentfulWebhookHeaders = {
-  Name: 'X-Contentful-Webhook-Name',
-  Topic: 'X-Contentful-Topic',
+  Name: 'x-contentful-webhook-name',
+  Topic: 'x-contentful-topic',
 } as const
 
 export class WebhookResponseError extends Error {
@@ -12,15 +13,16 @@ export class WebhookResponseError extends Error {
   }
 }
 
-const ContentfulTopicHeader = z.union([
-  z.literal('ContentfulManagement.Entry.create'),
-  z.literal('ContentfulManagement.Entry.publish'),
-  z.literal('ContentfulManagement.Entry.unpublish'),
-  z.literal('ContentfulManagement.Entry.delete')
+const ContentfulTopicHeader = z.enum([
+ 'ContentManagement.Entry.create',
+ 'ContentManagement.Entry.auto_save',
+ 'ContentManagement.Entry.publish',
+ 'ContentManagement.Entry.unpublish',
+ 'ContentManagement.Entry.delete'
 ])
 
 const ContentfulHeaders = z.object({
-  [ContentfulWebhookHeaders.Name]: z.literal('Snapshot Manager'),
+  [ContentfulWebhookHeaders.Name]: z.literal("Snapshot Manager"),
   [ContentfulWebhookHeaders.Topic]: ContentfulTopicHeader,
 })
 
@@ -29,18 +31,21 @@ const toHeadersRecord = (headers: Headers) => {
 }
 
 export const errorResponse = (error: WebhookResponseError, code = 400) => {
-  return new Response(JSON.stringify(error), {status: code})
+  return json(error, {status: code})
 }
 
 export const action: ActionFunction = async ({request}) => {
   if (request.method !== 'POST') {
-    return errorResponse(new WebhookResponseError('Method not allowed'), 405)
+    return errorResponse(
+      new WebhookResponseError(`Method "${request.method}" not allowed`),
+      405
+    )
   }
 
   const {error, data: headers, success} = ContentfulHeaders.safeParse(toHeadersRecord(request.headers))
 
   if (!success) {
-    return errorResponse(new WebhookResponseError('Invalid headers', error?.message))
+    return errorResponse(new WebhookResponseError('Invalid headers', error))
   }
 
   if (headers[ContentfulWebhookHeaders.Topic].includes('ContentType')) {
@@ -51,7 +56,19 @@ export const action: ActionFunction = async ({request}) => {
 
   console.log({subject, operation})
 
-  return new Response('Hello, world!', {
+  if(subject === 'Entry') {
+    if(operation === 'create') {
+      const entry = await request.json()
+      await createEntry({
+        raw: entry,
+        operation: operation,
+        space: entry.sys.space.sys.id,
+        environment: entry.sys.environment.sys.id,
+      })
+    }
+  }
+
+  return new Response('success', {
     headers: {
       'Content-Type': 'text/plain'
     }
