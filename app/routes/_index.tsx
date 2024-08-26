@@ -3,7 +3,7 @@ import {entries} from "~/database/schema";
 import {db} from "~/database";
 import {useLoaderData} from "@remix-run/react";
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
-import {desc} from "drizzle-orm";
+import {asc, desc} from "drizzle-orm";
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,7 +16,7 @@ export const loader = async () => {
   const data = await db
     .select()
     .from(entries)
-    .limit(10)
+    .limit(1000)
     .orderBy(desc(entries.createdAt))
     .execute()
   return json({data})
@@ -30,10 +30,9 @@ export default function Index() {
   return (
     <div className="font-sans p-4">
       <ul className="list-disc mt-4 pl-6 space-y-2">
-        {data.map(entry => {
-          console.log(entry.patch)
+        {data.filter(e => Array.isArray(e.patch) && e.patch.length).map(entry => {
           // @ts-ignore
-          return <li key={entry.id}>{entry.raw_entry.sys.id} {entry.createdAt} {entry.space} {entry.environment} {Array.isArray(entry.patch) ? entry.patch.length : '0'}</li>
+          return <li key={entry.id}>{entry.raw_entry.sys.id} {entry.createdAt} {entry.operation} {entry.space} {entry.environment} {Array.isArray(entry.patch) ? entry.patch.length : '0'}</li>
         })}
       </ul>
     </div>

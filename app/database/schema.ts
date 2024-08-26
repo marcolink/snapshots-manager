@@ -5,7 +5,7 @@ export const entries = pgTable('entry_table', {
   version: integer('version').notNull(),
   space: text('space').notNull(),
   environment: text('environment').notNull(),
-  operation: text('environment').notNull(),
+  operation: text('operation').notNull().default('unknown'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   raw_entry: jsonb('raw_entry').notNull(),
   patch: jsonb('patch').default([]).notNull(),

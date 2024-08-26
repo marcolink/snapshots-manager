@@ -39,7 +39,7 @@ export const createEntry = async (
 
   return db.insert(entries).values({
     // @ts-ignore
-    version: data.raw.sys.revision,
+    version: data.raw.sys.revision || data.raw.sys.version,
     space: data.space,
     environment: data.environment,
     raw_entry: data.raw,

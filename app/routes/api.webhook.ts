@@ -14,11 +14,11 @@ export class WebhookResponseError extends Error {
 }
 
 const ContentfulTopicHeader = z.enum([
- 'ContentManagement.Entry.create',
- 'ContentManagement.Entry.auto_save',
- 'ContentManagement.Entry.publish',
- 'ContentManagement.Entry.unpublish',
- 'ContentManagement.Entry.delete'
+  'ContentManagement.Entry.create',
+  'ContentManagement.Entry.auto_save',
+  'ContentManagement.Entry.publish',
+  'ContentManagement.Entry.unpublish',
+  'ContentManagement.Entry.delete'
 ])
 
 const ContentfulHeaders = z.object({
@@ -56,16 +56,14 @@ export const action: ActionFunction = async ({request}) => {
 
   console.log({subject, operation})
 
-  if(subject === 'Entry') {
-    if(operation === 'create') {
-      const entry = await request.json()
-      await createEntry({
-        raw: entry,
-        operation: operation,
-        space: entry.sys.space.sys.id,
-        environment: entry.sys.environment.sys.id,
-      })
-    }
+  if (subject === 'Entry') {
+    const entry = await request.json()
+    await createEntry({
+      raw: entry,
+      operation: operation,
+      space: entry.sys.space.sys.id,
+      environment: entry.sys.environment.sys.id,
+    })
   }
 
   return new Response('success', {
