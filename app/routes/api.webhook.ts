@@ -1,7 +1,6 @@
 import {ActionFunction, json} from "@remix-run/node";
 import {z} from "zod";
 import {createEntry} from "~/logic";
-import {Search} from "react-router";
 import {toRecord} from "~/utils/toRecord";
 
 export const ContentfulWebhookHeaders = {
@@ -56,16 +55,20 @@ export const action: ActionFunction = async ({request}) => {
 
   if (subject === 'Entry') {
     const entry = await request.json()
-    await createEntry({
+    const dnEntry = await createEntry({
       raw: entry,
       operation: operation,
       space: entry.sys.space.sys.id,
       environment: entry.sys.environment.sys.id,
       byUser: entry.sys.updatedBy.sys.id || entry.sys.createBy.sys.id
     })
+    return json({success: true, patch: dnEntry?.[0]?.patch}, {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    });
   }
-
-  return new Response('success', {
+  return json({success: true}, {
     headers: {
       'Content-Type': 'text/plain'
     }

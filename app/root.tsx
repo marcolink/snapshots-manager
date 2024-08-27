@@ -6,6 +6,8 @@ import {
   ScrollRestoration,
 } from "@remix-run/react";
 import "./tailwind.css";
+import {GlobalStyles} from "@contentful/f36-core";
+import React from "react";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -17,6 +19,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
+        <GlobalStyles/>
         {children}
         <ScrollRestoration />
         <Scripts />

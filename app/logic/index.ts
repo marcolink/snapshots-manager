@@ -66,22 +66,19 @@ export const createEntry = async (
     operation: data.operation,
     byUser: data.byUser,
     patch: patch,
-  }).execute();
+  }).returning().execute();
 }
 
 type GetEntriesParams = {
-  q: {
+  q?: {
     space?: string,
     environment?: string,
     entry?: string,
   }
-  limit: number
+  limit?: number
 }
 
 export const getEntries = async ({q, limit = 100}: GetEntriesParams) => {
-
-  console.log(q)
-
   const query = db
     .select()
     .from(entries)
