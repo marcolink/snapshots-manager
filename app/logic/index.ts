@@ -39,7 +39,7 @@ export const createEntry = async (
   if (storedEntries.length > 0) {
     const source = storedEntries[0].raw_entry as EntryProps;
     const target = data.raw;
-    patch = generateJSONPatch(source, target);
+    patch = generateJSONPatch({fields: source.fields}, {fields: target.fields});
     console.log({patch})
   } else {
     console.log('No stored entries found')
