@@ -2,8 +2,12 @@ import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {useLoaderData} from "@remix-run/react";
 import {getEntries} from "~/logic";
 import {toRecord} from "~/utils/toRecord";
+import {db} from "~/database";
+import {entries} from "~/database/schema";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
+  await db.delete(entries);
+
   const q = toRecord(new URL(request.url).searchParams)
   const data = await getEntries({q:{space: q.space}, limit: 100})
   return json({data})
