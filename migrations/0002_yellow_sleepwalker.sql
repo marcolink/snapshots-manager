@@ -1,0 +1,1 @@
+ALTER TABLE "entry_table" ADD COLUMN "operation" text DEFAULT 'unknown' NOT NULL;

@@ -1,32 +1,33 @@
 import {
   Links,
-  LiveReload,
   Meta,
   Outlet,
   Scripts,
-  ScrollRestoration
-} from "remix";
-import type { MetaFunction } from "remix";
+  ScrollRestoration,
+} from "@remix-run/react";
+import "./tailwind.css";
+import {GlobalStyles} from "@contentful/f36-core";
+import React from "react";
 
-export const meta: MetaFunction = () => {
-  return { title: "New Remix App" };
-};
-
-export default function App() {
+export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
         <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
       </head>
       <body>
-        <Outlet />
+        <GlobalStyles/>
+        {children}
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>
   );
+}
+
+export default function App() {
+  return <Outlet />;
 }

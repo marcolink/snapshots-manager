@@ -1,29 +1,5 @@
-import {ContentFields} from "contentful-management";
-import {ContentTypeProps} from "contentful-management/dist/typings/entities/content-type";
-import {SnapshotProps} from "contentful-management/dist/typings/entities/snapshot";
-import {Operation} from "fast-json-patch/module/core";
-import {Delta} from "jsondiffpatch";
+import {Jsonify} from "@remix-run/server-runtime/dist/jsonify";
+import {SelectEntry} from "~/database/schema";
 
-export type Patch = Operation[]
-
-export type Snapshot = {
-    version: number
-    space: string
-    environment: string
-    contentType: string
-    state: string
-}
-
-export type PatchGroup = {
-    delta: Delta
-    up: Patch,
-    down: Patch
-}
-
-export type FieldsMap = Record<string, ContentFields>;
-
-export type MappedContentTypeProps = ContentTypeProps & {fields: Record<string, ContentFields>}
-
-export type SnapshotWithPatch = SnapshotProps<ContentTypeProps> & {
-    patch: PatchGroup
-}
+export type WebhookActions = 'auto_save' | 'create' | 'archive' | 'unarchive' | 'publish' | 'unpublish' | 'delete'
+export type EntryData = Jsonify<SelectEntry>
