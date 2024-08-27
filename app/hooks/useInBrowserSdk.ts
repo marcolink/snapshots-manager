@@ -29,7 +29,7 @@ export function useInBrowserSdk<T extends BaseAppSDK>() {
     );
     setSdk((globalSDK as unknown as T));
     setCma(cma);
-  }, [])
+  },  [])
 
   return {sdk, cma}
 }

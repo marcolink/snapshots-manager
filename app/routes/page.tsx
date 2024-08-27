@@ -3,6 +3,7 @@ import {useLoaderData} from "@remix-run/react";
 import {getEntries} from "~/logic";
 import {toRecord} from "~/utils/toRecord";
 import {EntryTable} from "~/components/EntryTable";
+import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   // await db.delete(entries);
@@ -13,7 +14,11 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
 }
 
 export default function Page() {
-  const {data} = useLoaderData<typeof loader>()
+  const {data: entries} = useLoaderData<typeof loader>()
+  const {
+    data,
+  } = useWithContentfulUsers(entries)
+
   return (
     <div className="p-4">
       <EntryTable entries={data}/>

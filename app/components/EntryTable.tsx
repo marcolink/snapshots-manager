@@ -4,7 +4,9 @@ import {Table} from "@contentful/f36-table";
 import {Patch} from "generate-json-patch";
 import {Badge, BadgeVariant} from "@contentful/f36-badge";
 import {EntryData, WebhookActions} from "~/types";
-import {DateTime} from "@contentful/f36-datetime";
+import {RelativeDateTime} from "@contentful/f36-datetime";
+import {UserProps} from "contentful-management";
+import {Avatar} from "@contentful/f36-avatar";
 
 const OperationMap: Record<WebhookActions, BadgeVariant> = {
   auto_save: 'primary',
@@ -16,8 +18,10 @@ const OperationMap: Record<WebhookActions, BadgeVariant> = {
   delete: 'negative',
 }
 
-export function EntryTable({entries}: { entries: EntryData[] }) {
-  const {accessor} = createColumnHelper<EntryData>()
+type Data = EntryData & {user?: UserProps}
+
+export function EntryTable({entries}: { entries: Data[] }) {
+  const {accessor} = createColumnHelper<Data>()
   const columns = useMemo(() => [
     accessor('version', {
       header: () => 'Version',
@@ -25,7 +29,11 @@ export function EntryTable({entries}: { entries: EntryData[] }) {
     }),
     accessor('createdAt', {
       header: () => 'Created At',
-      cell: (info) => <DateTime date={info.getValue()} />
+      cell: (info) => <RelativeDateTime date={info.getValue()} />
+    }),
+    accessor('user', {
+      header: () => 'User',
+      cell: (info) => <Avatar isLoading={!Boolean(info.getValue()?.avatarUrl)} size={'tiny'} src={info.getValue()?.avatarUrl}/>
     }),
     accessor('space', {
       header: () => 'Space',

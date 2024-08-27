@@ -13,13 +13,6 @@ export const createEntry = async (
     byUser: string
   }
 ) => {
-
-  // const s = await db.query.entries.findFirst({
-  //   where: and(
-  //     eq(entries.space, data.space),
-  //     eq(entries.environment, data.environment)
-  //   )})
-
   const storedEntries = await db
     .select()
     .from(entries)

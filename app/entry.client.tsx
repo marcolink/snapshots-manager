@@ -12,6 +12,7 @@ import {KnownAppSDK} from "@contentful/app-sdk/dist/types";
 
 startTransition(() => {
   init((sdk: KnownAppSDK) => {
+    // @ts-expect-error App SDK is not defined in Remix
     window.__SDK__ = sdk
     hydrateRoot(
       document,

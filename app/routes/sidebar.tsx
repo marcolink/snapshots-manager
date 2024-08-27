@@ -7,6 +7,8 @@ import {EntityList} from "@contentful/f36-entity-list";
 import {Note} from "@contentful/f36-note";
 import {WebhookActions} from "~/types";
 import {ComponentProps} from "react";
+import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
+import {formatRelativeDateTime} from "@contentful/f36-datetime";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
@@ -31,7 +33,11 @@ const OperationMap: Record<WebhookActions, ComponentProps<typeof EntityList.Item
 
 export default function Sidebar() {
   useContentfulAutoResizer()
-  const {data} = useLoaderData<typeof loader>()
+  const {data:entries} = useLoaderData<typeof loader>()
+
+
+  const {data} = useWithContentfulUsers(entries)
+
 
   if(data.length === 0) {
     return <Note title={'No snapshots found'}/>
@@ -43,8 +49,9 @@ export default function Sidebar() {
         const patchLength = Array.isArray(entry.patch) ? entry.patch.length : 0
         return <EntityList.Item
           key={entry.id}
-          withThumbnail={false}
-          title={entry.createdAt}
+          thumbnailUrl={entry.user?.avatarUrl}
+          withThumbnail={true}
+          title={formatRelativeDateTime(entry.createdAt)}
           description={`v${entry.version} | changes: ${patchLength}`}
           status={OperationMap[entry.operation as WebhookActions]}
         />
