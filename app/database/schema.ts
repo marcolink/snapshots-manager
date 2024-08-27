@@ -6,6 +6,7 @@ export const entries = pgTable('entry_table', {
   version: integer('version').notNull(),
   space: text('space').notNull(),
   environment: text('environment').notNull(),
+  entry: text('entry').notNull().default('unknown'),
   operation: text('operation').notNull().default('unknown'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   raw_entry: jsonb('raw_entry').notNull(),

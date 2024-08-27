@@ -36,7 +36,7 @@ export const createEntry = async (
 
   let patch: Patch = []
 
-  if(storedEntries.length > 0) {
+  if (storedEntries.length > 0) {
     const source = storedEntries[0].raw_entry as EntryProps;
     const target = data.raw;
     patch = generateJSONPatch(source, target);
@@ -51,8 +51,41 @@ export const createEntry = async (
     space: data.space,
     environment: data.environment,
     raw_entry: data.raw,
+    entry: data.raw.sys.id,
     operation: data.operation,
     byUser: data.byUser,
     patch: patch,
   }).execute();
+}
+
+type GetEntriesParams = {
+  q: {
+    space?: string,
+    environment?: string,
+    entry?: string,
+  }
+  limit: number
+}
+
+export const getEntries = async ({q, limit = 100}: GetEntriesParams) => {
+
+  console.log(q)
+
+  const query = db
+    .select()
+    .from(entries)
+    .limit(limit)
+    .orderBy(desc(entries.createdAt))
+
+  if (q) {
+    query.where(
+      and(
+        q.space ? eq(entries.space, q.space) : undefined,
+        q.environment ? eq(entries.environment, q.environment) : undefined,
+        q.entry ? eq(entries.entry, q.entry) : undefined,
+      )
+    )
+  }
+
+  return query.execute();
 }

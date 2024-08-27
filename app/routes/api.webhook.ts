@@ -1,6 +1,8 @@
 import {ActionFunction, json} from "@remix-run/node";
 import {z} from "zod";
 import {createEntry} from "~/logic";
+import {Search} from "react-router";
+import {toRecord} from "~/utils/toRecord";
 
 export const ContentfulWebhookHeaders = {
   Name: 'x-contentful-webhook-name',
@@ -26,10 +28,6 @@ const ContentfulHeaders = z.object({
   [ContentfulWebhookHeaders.Topic]: ContentfulTopicHeader,
 })
 
-const toHeadersRecord = (headers: Headers) => {
-  return Object.fromEntries(Array.from(headers.entries()));
-}
-
 export const errorResponse = (error: WebhookResponseError, code = 400) => {
   return json(error, {status: code})
 }
@@ -42,7 +40,7 @@ export const action: ActionFunction = async ({request}) => {
     )
   }
 
-  const {error, data: headers, success} = ContentfulHeaders.safeParse(toHeadersRecord(request.headers))
+  const {error, data: headers, success} = ContentfulHeaders.safeParse(toRecord(request.headers))
 
   if (!success) {
     return errorResponse(new WebhookResponseError('Invalid headers', error))

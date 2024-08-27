@@ -1,0 +1,1 @@
+ALTER TABLE "entry_table" ADD COLUMN "entry" text DEFAULT 'unknown' NOT NULL;
