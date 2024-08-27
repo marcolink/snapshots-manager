@@ -3,32 +3,52 @@ import {useLoaderData} from "@remix-run/react";
 import {getEntries} from "~/logic";
 import {toRecord} from "~/utils/toRecord";
 import {useContentfulAutoResizer} from "~/hooks/useContentfulAutoResizer";
+import {EntityList} from "@contentful/f36-entity-list";
+import {Note} from "@contentful/f36-note";
+import {WebhookActions} from "~/types";
+import {ComponentProps} from "react";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
   console.log(q)
-  const data = await getEntries({q: {
-    ...q, environment: q.environmentAlias || q.environment
-    }, limit: 100})
+  const data = await getEntries({
+    q: {
+      ...q, environment: q.environmentAlias || q.environment
+    }, limit: 100
+  })
   return json({data})
+}
+
+const OperationMap: Record<WebhookActions, ComponentProps<typeof EntityList.Item>['status']> = {
+  create: 'changed',
+  auto_save: 'changed',
+  publish: 'published',
+  archive: 'archived',
+  delete: 'archived',
+  unarchive: 'changed',
+  unpublish: 'changed'
 }
 
 export default function Sidebar() {
   useContentfulAutoResizer()
   const {data} = useLoaderData<typeof loader>()
 
-  console.log(data)
+  if(data.length === 0) {
+    return <Note title={'No snapshots found'}/>
+  }
 
   return (
-    <div className="font-sans p-4">
-      <ul className="list-disc mt-4 pl-6 space-y-2">
-        {data.filter(e => Array.isArray(e.patch) && e.patch.length).map(entry => {
-          console.log(entry)
-          return <li key={entry.id}>
-            {entry.createdAt} {Array.isArray(entry.patch) ? entry.patch.length : '0'}
-          </li>
-        })}
-      </ul>
-    </div>
+    <EntityList>
+      {data.map(entry => {
+        const patchLength = Array.isArray(entry.patch) ? entry.patch.length : 0
+        return <EntityList.Item
+          key={entry.id}
+          withThumbnail={false}
+          title={entry.createdAt}
+          description={`v${entry.version} | changes: ${patchLength}`}
+          status={OperationMap[entry.operation as WebhookActions]}
+        />
+      })}
+    </EntityList>
   );
 }

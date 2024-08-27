@@ -9,5 +9,5 @@ export function useContentfulAutoResizer() {
         console.log("stop auto resizer")
         stopAutoResizer()
       }
-  }, [window.__SDK__])
+  }, [window?.__SDK__])
 }

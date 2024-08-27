@@ -2,8 +2,6 @@ import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {useLoaderData} from "@remix-run/react";
 import {getEntries} from "~/logic";
 import {toRecord} from "~/utils/toRecord";
-import {db} from "~/database";
-import {entries} from "~/database/schema";
 import {EntryTable} from "~/components/EntryTable";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
@@ -18,7 +16,7 @@ export default function Page() {
   const {data} = useLoaderData<typeof loader>()
   return (
     <div className="p-4">
-        <EntryTable entries={data}/>
+      <EntryTable entries={data}/>
     </div>
   );
 }

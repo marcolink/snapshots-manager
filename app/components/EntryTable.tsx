@@ -1,35 +1,48 @@
-import {SelectEntry} from "~/database/schema";
 import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@tanstack/react-table";
 import {useMemo} from "react";
 import {Table} from "@contentful/f36-table";
-import {Jsonify} from "@remix-run/server-runtime/dist/jsonify";
 import {Patch} from "generate-json-patch";
+import {Badge, BadgeVariant} from "@contentful/f36-badge";
+import {EntryData, WebhookActions} from "~/types";
+import {DateTime} from "@contentful/f36-datetime";
 
+const OperationMap: Record<WebhookActions, BadgeVariant> = {
+  auto_save: 'primary',
+  create: 'primary-filled',
+  archive: 'negative',
+  unarchive: 'primary-filled',
+  publish: 'positive',
+  unpublish: 'negative',
+  delete: 'negative',
+}
 
-type Data = Jsonify<SelectEntry>
-
-export function EntryTable({entries}: { entries: Data[] }) {
-  const {accessor} = createColumnHelper<Data>()
+export function EntryTable({entries}: { entries: EntryData[] }) {
+  const {accessor} = createColumnHelper<EntryData>()
   const columns = useMemo(() => [
     accessor('version', {
       header: () => 'Version',
-      cell: (info) => <div>{info.getValue()}</div>
+      cell: (info) => <Badge variant={'secondary'}>{info.getValue()}</Badge>
     }),
     accessor('createdAt', {
       header: () => 'Created At',
-      cell: (info) => <div>{info.getValue()}</div>
+      cell: (info) => <DateTime date={info.getValue()} />
     }),
     accessor('space', {
       header: () => 'Space',
-      cell: (info) => <div>{info.getValue()}</div>
+      cell: (info) => <pre>{info.getValue()}</pre>
     }),
     accessor('environment', {
       header: () => 'Environment',
-      cell: (info) => <div>{info.getValue()}</div>
+      cell: (info) => <Badge variant="secondary">{info.getValue()}</Badge>
     }),
     accessor('entry', {
       header: () => 'Entry',
-      cell: (info) => <div>{info.getValue()}</div>
+      cell: (info) => <pre>{info.getValue()}</pre>
+    }),
+    accessor('operation', {
+      header: () => 'Operation',
+      cell: (info) => <Badge
+        variant={OperationMap[info.getValue() as keyof typeof OperationMap]}>{info.getValue()}</Badge>
     }),
     accessor('patch', {
       header: () => 'Patch Size',
@@ -53,42 +66,42 @@ export function EntryTable({entries}: { entries: Data[] }) {
 
   return <Table>
     <Table.Head>
-    {table.getHeaderGroups().map(headerGroup => (
-      <Table.Row key={headerGroup.id}>
-        {headerGroup.headers.map(header => (
-          <Table.Cell key={header.id}>
-            {header.isPlaceholder
-              ? null
-              : flexRender(
-                header.column.columnDef.header,
-                header.getContext(),
-              )}
-          </Table.Cell>
-        ))}
-      </Table.Row>
-    ))}
-    </Table.Head>
-    <Table.Body>
-    {hasData ? (
-      rows.map(row => (
-        <Table.Row key={row.id}>
-          {row.getVisibleCells().map(cell => (
-            <Table.Cell key={cell.id}>
-              {flexRender(
-                cell.column.columnDef.cell,
-                cell.getContext(),
-              )}
+      {table.getHeaderGroups().map(headerGroup => (
+        <Table.Row key={headerGroup.id}>
+          {headerGroup.headers.map(header => (
+            <Table.Cell key={header.id}>
+              {header.isPlaceholder
+                ? null
+                : flexRender(
+                  header.column.columnDef.header,
+                  header.getContext(),
+                )}
             </Table.Cell>
           ))}
         </Table.Row>
-      ))
-    ) : (
-      <Table.Row>
-        <Table.Cell colSpan={cols}>
-          <p> No Data found!</p>
-        </Table.Cell>
-      </Table.Row>
-    )}
+      ))}
+    </Table.Head>
+    <Table.Body>
+      {hasData ? (
+        rows.map(row => (
+          <Table.Row key={row.id}>
+            {row.getVisibleCells().map(cell => (
+              <Table.Cell key={cell.id}>
+                {flexRender(
+                  cell.column.columnDef.cell,
+                  cell.getContext(),
+                )}
+              </Table.Cell>
+            ))}
+          </Table.Row>
+        ))
+      ) : (
+        <Table.Row>
+          <Table.Cell colSpan={cols}>
+            <p> No Data found!</p>
+          </Table.Cell>
+        </Table.Row>
+      )}
     </Table.Body>
   </Table>;
 }
