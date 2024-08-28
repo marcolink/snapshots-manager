@@ -3,6 +3,7 @@ import {WebhookActions} from "~/types";
 
 export const OperationMap: Record<WebhookActions, BadgeVariant> = {
   auto_save: 'primary',
+  save: 'primary',
   create: 'primary-filled',
   archive: 'negative',
   unarchive: 'primary-filled',

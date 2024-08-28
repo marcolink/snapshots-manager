@@ -1,6 +1,5 @@
 import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {useLoaderData} from "@remix-run/react";
-import {getEntries} from "~/logic";
 import {toRecord} from "~/utils/toRecord";
 import {useContentfulAutoResizer} from "~/hooks/useContentfulAutoResizer";
 import {EntityList} from "@contentful/f36-entity-list";
@@ -9,11 +8,12 @@ import {WebhookActions} from "~/types";
 import {ComponentProps} from "react";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
+import {client} from "~/logic";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
   console.log(q)
-  const data = await getEntries({
+  const data = await client.getEntries({
     q: {
       ...q, environment: q.environmentAlias || q.environment
     }, limit: 100
@@ -24,6 +24,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
 const OperationMap: Record<WebhookActions, ComponentProps<typeof EntityList.Item>['status']> = {
   create: 'changed',
   auto_save: 'changed',
+  save: 'changed',
   publish: 'published',
   archive: 'archived',
   delete: 'archived',

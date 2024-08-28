@@ -1,7 +1,8 @@
 import {ActionFunction, json} from "@remix-run/node";
 import {z} from "zod";
-import {createEntry} from "~/logic";
+import {client} from "~/logic";
 import {toRecord} from "~/utils/toRecord";
+import {WebhookActions} from "~/types";
 
 export const ContentfulWebhookHeaders = {
   Name: 'x-contentful-webhook-name',
@@ -69,11 +70,12 @@ export const action: ActionFunction = async ({request}) => {
 
   console.log({subject, operation})
 
+  // validate the subject and operation
   if (subject === 'Entry') {
     const entry = await request.json()
-    const dnEntry = await createEntry({
+    const dnEntry = await client.createEntry({
       raw: entry,
-      operation: operation,
+      operation: operation as WebhookActions,
       space: entry.sys.space.sys.id,
       environment: entry.sys.environment.sys.id,
       byUser: entry.sys.updatedBy.sys.id || entry.sys.createBy.sys.id
@@ -83,10 +85,14 @@ export const action: ActionFunction = async ({request}) => {
         'Content-Type': 'text/plain'
       }
     });
+  } else {
+    return json({
+      success: false,
+      message: `Subject "${subject}" not supported (yet).`
+    }, {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    });
   }
-  return json({success: true}, {
-    headers: {
-      'Content-Type': 'text/plain'
-    }
-  });
 }
