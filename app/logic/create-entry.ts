@@ -1,6 +1,6 @@
 import {EntryProps} from "contentful-management";
 import {db} from "~/database";
-import {entries, SelectEntry} from "~/database/schema";
+import {entries} from "~/database/schema";
 import {and, desc, eq, inArray} from "drizzle-orm";
 import {generateJSONPatch} from "generate-json-patch";
 import {WebhookActions} from "~/types";

@@ -16,6 +16,7 @@ export function OperationSelect({entries}: Params) {
     <ButtonGroup>
       {Object.keys(OperationMap).map((operation) => {
         return <ToggleButton
+          key={operation}
           isActive={selected === operation}
           aria-label={operation}
           size="small"

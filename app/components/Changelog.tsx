@@ -2,9 +2,7 @@ import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {EntryData} from "~/types";
 import {UserProps} from "contentful-management";
 import {Card} from "@contentful/f36-card";
-import {Paragraph} from "@contentful/f36-typography";
-import {Avatar} from "@contentful/f36-avatar";
-import {Box, Flex, Stack} from "@contentful/f36-core";
+import {Stack} from "@contentful/f36-core";
 import {OperationBadge} from "~/components/OperationBadge";
 import {User} from "~/components/User";
 
@@ -14,7 +12,7 @@ export function Changelog({entries}: { entries: Data[] }) {
 
   return (
     <Stack flexDirection={'column'} alignItems="center">
-      {entries.map((entry, index) => (
+      {entries.map((entry) => (
         <Card
           style={{width: '30%', minWidth: '500px'}}
           badge={<OperationBadge operation={entry.operation}/>}
