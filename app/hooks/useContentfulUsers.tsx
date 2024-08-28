@@ -4,7 +4,7 @@ import useAsync from "react-use/lib/useAsync";
 export function useContentfulUsers(userIds: string[]) {
   const {cma, sdk} = useInBrowserSdk()
 
-  // Can we wrap it in a useInBrowser hook?
+  // Can we wrap it in a useInBrowser hook? this hook is constantly breaking HMR
   return useAsync(async () => {
     if(!cma || !sdk) {
       return []
@@ -17,6 +17,9 @@ export function useContentfulUsers(userIds: string[]) {
         'sys.id[in]': userIds
       }
     })
+
+    console.log(result.items)
+
     return result.items
   }, [userIds.toString(), cma, sdk]);
 

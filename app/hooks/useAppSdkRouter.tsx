@@ -15,6 +15,8 @@ export const useAppSdkRouter = () => {
       path = '/page'
     } else if (sdk?.location.is(AppSDK.locations.LOCATION_ENTRY_SIDEBAR)) {
       path = '/sidebar'
+    } else if (sdk?.location.is(AppSDK.locations.LOCATION_ENTRY_EDITOR)) {
+      path = '/entry-editor'
     } else {
       console.warn('Unknown location', sdk?.location)
       return

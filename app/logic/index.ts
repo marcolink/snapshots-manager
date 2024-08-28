@@ -25,8 +25,6 @@ export const createEntry = async (
     .orderBy(desc(entries.createdAt))
     .limit(1);
 
-  console.log({storedEntries})
-
   let patch: Patch = []
 
   if (storedEntries.length > 0) {

@@ -2,23 +2,14 @@ import {createColumnHelper, flexRender, getCoreRowModel, useReactTable} from "@t
 import {useMemo} from "react";
 import {Table} from "@contentful/f36-table";
 import {Patch} from "generate-json-patch";
-import {Badge, BadgeVariant} from "@contentful/f36-badge";
-import {EntryData, WebhookActions} from "~/types";
+import {Badge} from "@contentful/f36-badge";
+import {EntryData} from "~/types";
 import {RelativeDateTime} from "@contentful/f36-datetime";
 import {UserProps} from "contentful-management";
-import {Avatar} from "@contentful/f36-avatar";
+import {OperationBadge} from "~/components/OperationBadge";
+import {User} from "~/components/User";
 
-const OperationMap: Record<WebhookActions, BadgeVariant> = {
-  auto_save: 'primary',
-  create: 'primary-filled',
-  archive: 'negative',
-  unarchive: 'primary-filled',
-  publish: 'positive',
-  unpublish: 'negative',
-  delete: 'negative',
-}
-
-type Data = EntryData & {user?: UserProps}
+type Data = EntryData & { user?: UserProps }
 
 export function EntryTable({entries}: { entries: Data[] }) {
   const {accessor} = createColumnHelper<Data>()
@@ -29,11 +20,11 @@ export function EntryTable({entries}: { entries: Data[] }) {
     }),
     accessor('createdAt', {
       header: () => 'Created At',
-      cell: (info) => <RelativeDateTime date={info.getValue()} />
+      cell: (info) => <RelativeDateTime date={info.getValue()}/>
     }),
     accessor('user', {
       header: () => 'User',
-      cell: (info) => <Avatar isLoading={!Boolean(info.getValue()?.avatarUrl)} size={'tiny'} src={info.getValue()?.avatarUrl}/>
+      cell: (info) => <User user={info.getValue()}/>
     }),
     accessor('space', {
       header: () => 'Space',
@@ -49,8 +40,7 @@ export function EntryTable({entries}: { entries: Data[] }) {
     }),
     accessor('operation', {
       header: () => 'Operation',
-      cell: (info) => <Badge
-        variant={OperationMap[info.getValue() as keyof typeof OperationMap]}>{info.getValue()}</Badge>
+      cell: (info) => <OperationBadge operation={info.getValue()}/>
     }),
     accessor('patch', {
       header: () => 'Patch Size',

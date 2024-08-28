@@ -6,7 +6,7 @@ export function useWithContentfulUsers <T extends {byUser: string}>(data: T[]) {
     value: users,
     loading: isUsersLoading,
     error: usersError
-  } = useContentfulUsers(data.map(entry => entry.byUser))
+  } = useContentfulUsers([...new Set(data.map(entry => entry.byUser))])
 
   const dataWithUsers = useMemo(() => {
     return data.map(entry => {
@@ -16,7 +16,7 @@ export function useWithContentfulUsers <T extends {byUser: string}>(data: T[]) {
         user
       }
     })
-  }, [users?.toString(), data])
+  }, [users?.toString(), data.toString()])
 
   return {
     data: dataWithUsers,
