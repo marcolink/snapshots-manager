@@ -9,6 +9,8 @@ import {WebhookActions} from "~/types";
 import {ComponentProps} from "react";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
+import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
+import {SidebarAppSDK} from "@contentful/app-sdk";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
@@ -33,17 +35,16 @@ const OperationMap: Record<WebhookActions, ComponentProps<typeof EntityList.Item
 
 export default function Sidebar() {
   useContentfulAutoResizer()
+
   const {data:entries} = useLoaderData<typeof loader>()
-
-
   const {data} = useWithContentfulUsers(entries)
-
 
   if(data.length === 0) {
     return <Note title={'No snapshots found'}/>
   }
 
   return (
+    <div>
     <EntityList>
       {data.map(entry => {
         const patchLength = Array.isArray(entry.patch) ? entry.patch.length : 0
@@ -57,5 +58,6 @@ export default function Sidebar() {
         />
       })}
     </EntityList>
+    </div>
   );
 }

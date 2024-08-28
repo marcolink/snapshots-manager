@@ -15,11 +15,27 @@ export class WebhookResponseError extends Error {
 }
 
 const ContentfulTopicHeader = z.enum([
+  'ContentManagement.ContentType.create',
+  'ContentManagement.ContentType.save',
+  'ContentManagement.ContentType.publish',
+  'ContentManagement.ContentType.unpublish',
+  'ContentManagement.ContentType.delete',
   'ContentManagement.Entry.create',
+  'ContentManagement.Entry.save',
   'ContentManagement.Entry.auto_save',
+  'ContentManagement.Entry.archive',
+  'ContentManagement.Entry.unarchive',
   'ContentManagement.Entry.publish',
   'ContentManagement.Entry.unpublish',
-  'ContentManagement.Entry.delete'
+  'ContentManagement.Entry.delete',
+  'ContentManagement.Asset.create',
+  'ContentManagement.Asset.save',
+  'ContentManagement.Asset.auto_save',
+  'ContentManagement.Asset.archive',
+  'ContentManagement.Asset.unarchive',
+  'ContentManagement.Asset.publish',
+  'ContentManagement.Asset.unpublish',
+  'ContentManagement.Asset.delete',
 ])
 
 const ContentfulHeaders = z.object({

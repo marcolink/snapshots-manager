@@ -1,10 +1,11 @@
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
-import * as reactUse from "react-use";
+import useAsync from "react-use/lib/useAsync";
 
 export function useContentfulUsers(userIds: string[]) {
   const {cma, sdk} = useInBrowserSdk()
 
-  return reactUse.useAsync(async () => {
+  // Can we wrap it in a useInBrowser hook?
+  return useAsync(async () => {
     if(!cma || !sdk) {
       return []
     }
