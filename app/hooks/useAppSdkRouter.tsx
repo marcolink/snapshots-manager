@@ -2,12 +2,17 @@ import {useInBrowser} from "~/hooks/useInBrowser";
 import {useNavigate} from "react-router";
 import * as AppSDK from "@contentful/app-sdk";
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
+import {toRecord} from "~/utils/toRecord";
 
 export const useAppSdkRouter = () => {
   const navigate = useNavigate();
   const {sdk} = useInBrowserSdk()
 
   useInBrowser(() => {
+    // If the SDK is not available, we can't navigate
+    if (!sdk) {
+      return
+    }
 
     let path = ''
 
@@ -23,8 +28,9 @@ export const useAppSdkRouter = () => {
     }
 
     const params = new URLSearchParams(sdk?.ids)
+    console.log("Navigate path", path)
+    console.log("Navigate params", toRecord(params))
     path += `?${params.toString()}`
-    console.log(`Navigating to "${path}"`)
     return navigate(path)
   }, [sdk])
 }

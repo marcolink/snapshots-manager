@@ -3,8 +3,8 @@ import {useMemo} from "react";
 
 export function useWithContentfulUsers <T extends {byUser: string}>(data: T[]) {
   const {
-    value: users,
-    loading: isUsersLoading,
+    data: users,
+    isLoading: isUsersLoading,
     error: usersError
   } = useContentfulUsers([...new Set(data.map(entry => entry.byUser))])
 
@@ -16,7 +16,7 @@ export function useWithContentfulUsers <T extends {byUser: string}>(data: T[]) {
         user
       }
     })
-  }, [users?.toString(), data.toString()])
+  }, [users, data])
 
   return {
     data: dataWithUsers,

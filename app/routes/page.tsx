@@ -33,8 +33,6 @@ export default function Page() {
     data,
   } = useWithContentfulUsers(entries)
 
-  console.log({stream})
-
   const submit = useSubmit()
 
   return (

@@ -2,7 +2,9 @@ import {useInBrowser} from "~/hooks/useInBrowser";
 
 export function useContentfulAutoResizer() {
   useInBrowser(() => {
-      const {startAutoResizer} = window.__SDK__.window
+    const {startAutoResizer} = window?.__SDK__?.window
+    if(typeof startAutoResizer === 'function'){
       startAutoResizer()
-  }, [window?.__SDK__])
+    }
+  }, [typeof window !== "undefined"])
 }

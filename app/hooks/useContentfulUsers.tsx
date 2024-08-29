@@ -1,25 +1,24 @@
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
-import useAsync from "react-use/lib/useAsync";
+import {useQuery} from "@tanstack/react-query";
 
 export function useContentfulUsers(userIds: string[]) {
   const {cma, sdk} = useInBrowserSdk()
 
-  // Can we wrap it in a useInBrowser hook? this hook is constantly breaking HMR
-  return useAsync(async () => {
-    if(!cma || !sdk) {
-      return []
-    }
+  return useQuery({
+    queryKey: [sdk?.ids, 'contentful-users', userIds],
+    queryFn: async () => {
+      const result = await cma?.user.getManyForSpace({
+        spaceId: sdk?.ids.space,
+        organizationId: sdk?.ids.organization,
+        query: {
+          'sys.id[in]': userIds
+        }
+      })
 
-    const result =  await cma?.user.getManyForSpace({
-      spaceId: sdk?.ids.space,
-      organizationId: sdk?.ids.organization,
-      query: {
-        'sys.id[in]': userIds
-      }
-    })
-
-    return result.items
-  }, [userIds.toString(), cma, sdk]);
-
-
+      return result?.items || []
+    },
+    enabled: !!userIds.length,
+    initialData: [],
+    placeholderData: [],
+  });
 }
