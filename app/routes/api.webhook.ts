@@ -70,6 +70,39 @@ export const action: ActionFunction = async ({request}) => {
 
   console.log({subject, operation})
 
+  // Unpublish payload, (archived) might be the same
+  // {
+  //   "sys": {
+  //   "type": "DeletedEntry",
+  //     "id": "4y6EPw1MabFaMhSg14dSXJ",
+  //     "space": {
+  //     "sys": {
+  //       "type": "Link",
+  //         "linkType": "Space",
+  //         "id": "a6ucnp32h2xm"
+  //     }
+  //   },
+  //   "environment": {
+  //     "sys": {
+  //       "id": "master",
+  //         "type": "Link",
+  //         "linkType": "Environment"
+  //     }
+  //   },
+  //   "contentType": {
+  //     "sys": {
+  //       "type": "Link",
+  //         "linkType": "ContentType",
+  //         "id": "timeMachineExample"
+  //     }
+  //   },
+  //   "revision": 3,
+  //     "createdAt": "2024-08-29T18:03:36.855Z",
+  //     "updatedAt": "2024-08-29T18:03:36.855Z",
+  //     "deletedAt": "2024-08-29T18:03:36.855Z"
+  // }
+  // }
+
   // validate the subject and operation
   if (subject === 'Entry') {
     const entry = await request.json()

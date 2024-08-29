@@ -14,8 +14,6 @@ export function useInBrowserSdk<T extends BaseAppSDK>() {
       return;
     }
 
-    console.count("SDK loaded");
-
     const cma = contentfulManagement.createClient(
       {apiAdapter: globalSDK.cmaAdapter},
       {
