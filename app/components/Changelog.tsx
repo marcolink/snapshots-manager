@@ -21,7 +21,7 @@ function transformX(index: number) {
 
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 
-function V1({entries}: { entries: Data[] }) {
+function V1({entries, isLoadingUsers}: { entries: Data[], isLoadingUsers?: boolean }) {
 
   return (
     <Stack flexDirection={'column'} alignItems="center">
@@ -33,7 +33,7 @@ function V1({entries}: { entries: Data[] }) {
           marginBottom={'spacingM'}
           title={`v${entry.version} - ${formatRelativeDateTime(entry.createdAt)}`}
         >
-          <User user={entry.user}/>
+          <User user={entry.user} isLoading={isLoadingUsers}/>
           {detailOperations.includes(entry.operation as WebhookActions) && <SnapshotContent entry={entry}/>}
         </Card>)
       })}

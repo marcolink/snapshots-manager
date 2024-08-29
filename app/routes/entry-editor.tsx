@@ -30,7 +30,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
 export default function Page() {
   const {data: entries, stream} = useLoaderData<typeof loader>()
   const {
-    data,
+    data, isUsersLoading,
   } = useWithContentfulUsers(entries)
 
   const submit = useSubmit()
@@ -48,7 +48,7 @@ export default function Page() {
           {/*<Form method="post">*/}
           {/* <StreamSelect selected={selected}/>*/}
           {/*</Form>*/}
-          <Changelog entries={data}/>
+          <Changelog entries={data} isLoadingUsers={isUsersLoading}/>
         </Flex>
       </Box>
     </Form>

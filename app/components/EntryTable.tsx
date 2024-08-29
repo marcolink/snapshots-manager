@@ -11,7 +11,7 @@ import {User} from "~/components/User";
 
 type Data = EntryData & { user?: UserProps }
 
-export function EntryTable({entries}: { entries: Data[] }) {
+export function EntryTable({entries, isUsersLoading = false}: { entries: Data[], isUsersLoading?:boolean }) {
   const {accessor} = createColumnHelper<Data>()
   const columns = useMemo(() => [
     accessor('version', {
@@ -24,7 +24,7 @@ export function EntryTable({entries}: { entries: Data[] }) {
     }),
     accessor('user', {
       header: () => 'User',
-      cell: (info) => <User user={info.getValue()}/>
+      cell: (info) => <User user={info.getValue()} isLoading={isUsersLoading}/>
     }),
     accessor('space', {
       header: () => 'Space',
@@ -49,7 +49,7 @@ export function EntryTable({entries}: { entries: Data[] }) {
         return <div>{data.length}</div>
       }
     })
-  ], [])
+  ], [isUsersLoading])
 
   const table = useReactTable({
     data: entries,

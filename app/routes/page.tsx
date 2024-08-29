@@ -30,7 +30,7 @@ export const action = async ({request}: ActionFunctionArgs) => {
 export default function Page() {
   const {data: entries, stream} = useLoaderData<typeof loader>()
   const {
-    data,
+    data, isUsersLoading,
   } = useWithContentfulUsers(entries)
 
   const submit = useSubmit()
