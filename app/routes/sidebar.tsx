@@ -12,12 +12,12 @@ import {client} from "~/logic";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
-  console.log(q)
   const data = await client.getEntries({
     q: {
       ...q, environment: q.environmentAlias || q.environment
     }, limit: 100
   })
+
   return json({data})
 }
 

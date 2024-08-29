@@ -4,7 +4,7 @@ import {entries} from "~/database/schema";
 import {and, desc, eq, inArray} from "drizzle-orm";
 import {generateJSONPatch} from "generate-json-patch";
 import {WebhookActions} from "~/types";
-import {operationStreams} from "~/logic/streams";
+import {streamKeyForOperation, Streams} from "~/logic/streams";
 
 type Params = {
   space: string,
@@ -61,9 +61,7 @@ async function getReferenceEntry(data: Params) {
     return Promise.resolve(getDefaultReferenceEntry(data));
   }
 
-  const stream = operationStreams.publish.includes(data.operation)
-    ? 'publish'
-    : 'update';
+  const stream = streamKeyForOperation(data.operation);
 
   const result = await db
     .select()
@@ -71,7 +69,7 @@ async function getReferenceEntry(data: Params) {
       and(
         eq(entries.space, data.space),
         eq(entries.environment, data.environment),
-        inArray(entries.operation, operationStreams[stream]),
+        inArray(entries.operation, Streams[stream]),
       )
     )
     .orderBy(desc(entries.createdAt))

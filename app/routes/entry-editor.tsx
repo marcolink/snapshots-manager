@@ -1,23 +1,41 @@
-import {json, LoaderFunctionArgs} from "@remix-run/node";
-import {useLoaderData} from "@remix-run/react";
+import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
+import {Form, useLoaderData, useActionData} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
 import {Changelog} from "~/components/Changelog";
 import {Heading} from "@contentful/f36-typography";
 import {Box, Flex} from '@contentful/f36-core';
-import {OperationSelect} from "~/components/OperationSelect";
 import {client} from "~/logic";
+import {StreamSelect} from "~/components/StreamSelect";
+import {StreamKeyDec, StreamKeys} from "~/logic/streams";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-  // await db.delete(entries);
+  console.log('entity-list LOADER')
 
+  // await db.delete(entries);
   const q = toRecord(new URL(request.url).searchParams)
-  const data = await client.getEntries({q: {}})
-  return json({data})
+  const stream = StreamKeyDec.catch(StreamKeys.publish).parse(q.stream)
+
+  const query = {
+    q: {
+      ...q,
+      environment: q.environmentAlias || q.environment,
+      stream: stream,
+    }, limit: 100
+  }
+
+  const data = await client.getEntries({
+    q: {
+      ...q,
+      environment: q.environmentAlias || q.environment,
+      stream: stream,
+    }, limit: 100
+  })
+  return json({data, selected: stream, query})
 }
 
 export default function Page() {
-  const {data: entries} = useLoaderData<typeof loader>()
+  const {data: entries, selected} = useLoaderData<typeof loader>()
   const {
     data,
   } = useWithContentfulUsers(entries)
@@ -26,7 +44,9 @@ export default function Page() {
     <Box padding={'spacingL'}>
       <Heading>Changelog</Heading>
       <Flex justifyContent={'center'}>
-        <OperationSelect entries={entries}/>
+        {/*<Form method="post">*/}
+        {/* <StreamSelect selected={selected}/>*/}
+        {/*</Form>*/}
       </Flex>
       <Changelog entries={data}/>
     </Box>

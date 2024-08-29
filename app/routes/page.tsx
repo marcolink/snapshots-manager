@@ -9,7 +9,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
   // await db.delete(entries);
 
   const q = toRecord(new URL(request.url).searchParams)
-  const data = await client.getEntries({q: {}})
+  const data = await client.getEntries({q: {space: q.space}})
   return json({data})
 }
 

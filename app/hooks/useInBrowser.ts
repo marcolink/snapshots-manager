@@ -1,7 +1,7 @@
 import {DependencyList, useEffect} from "react";
 
 // https://remix.run/docs/en/main/guides/constraints#initializing-browser-only-apis
-export function useInBrowser(func: () => void, dependencies: DependencyList[] = []) {
+export function useInBrowser(func: () => void, dependencies: DependencyList = []) {
   useEffect(() => {
     if (typeof document !== "undefined") {
       func()

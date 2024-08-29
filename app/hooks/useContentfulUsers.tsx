@@ -18,8 +18,6 @@ export function useContentfulUsers(userIds: string[]) {
       }
     })
 
-    console.log(result.items)
-
     return result.items
   }, [userIds.toString(), cma, sdk]);
 
