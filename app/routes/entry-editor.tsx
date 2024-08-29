@@ -41,15 +41,15 @@ export default function Page() {
       onChange={(event) => submit(event.currentTarget)}>
       <Box padding={'spacingL'}>
         <Heading>Changelog</Heading>
-        <Flex justifyContent={'center'}>
+        <Flex justifyContent={'center'} flexDirection={'column'} alignItems="center" >
           <StreamSelect selected={stream}/>
           <ExistingSearchParams exclude={['stream']}/>
 
           {/*<Form method="post">*/}
           {/* <StreamSelect selected={selected}/>*/}
           {/*</Form>*/}
+          <Changelog entries={data}/>
         </Flex>
-        <Changelog entries={data}/>
       </Box>
     </Form>
   );

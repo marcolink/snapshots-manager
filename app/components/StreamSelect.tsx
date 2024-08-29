@@ -11,8 +11,6 @@ type Params = {
 
 export function StreamSelect({selected}: Params) {
   const [localSelected, setLocalSelected] = useState<StreamsType>(StreamKeys.publish);
-  console.log('StreamSelect', {selected, localSelected})
-
   return (
     <FormControl>
       <input type={'hidden'} name={'stream'} value={localSelected}/>
