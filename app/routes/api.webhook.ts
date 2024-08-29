@@ -113,7 +113,10 @@ export const action: ActionFunction = async ({request}) => {
       environment: entry.sys.environment.sys.id,
       byUser: entry.sys.updatedBy.sys.id || entry.sys.createBy.sys.id
     })
-    return json({success: true, patch: dnEntry?.[0]?.patch}, {
+    return json({
+      success: true,
+      patch: dnEntry?.[0]?.patch,
+      signature: dnEntry?.[0]?.signature}, {
       headers: {
         'Content-Type': 'text/plain'
       }

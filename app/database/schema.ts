@@ -11,6 +11,15 @@ export const entries = pgTable('entry_table', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
   raw_entry: jsonb('raw_entry').notNull(),
   patch: jsonb('patch').default([]).notNull(),
+  signature: text('signature').references(() => signature_content.signature, { onDelete: 'cascade' }),
+});
+
+export const signature_content = pgTable('signature_content_table', {
+  id: serial('id').primaryKey(),
+  space: text('space').notNull(),
+  signature: text('signature').notNull().unique(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  data: jsonb('data').notNull(),
 });
 
 export type InsertEntry = typeof entries.$inferInsert;

@@ -7,9 +7,12 @@ import {client} from "~/logic";
 import {StreamSelect} from "~/components/StreamSelect";
 import {StreamKeyDec, StreamKeys} from "~/logic/streams";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
+// import {db} from "~/database";
+// import {entries, signature_content} from "~/database/schema";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-  // await db.delete(entries);
+  // await db.delete(entries).execute();
+  // await db.delete(signature_content).execute();
 
   console.log('entity-list LOADER')
 
