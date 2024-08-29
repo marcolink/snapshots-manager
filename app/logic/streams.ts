@@ -21,4 +21,4 @@ export function streamKeyForOperation(operation: WebhookActions): keyof typeof S
   throw new Error(`Unknown operation ${operation}`)
 }
 
-export const StreamKeyDec = z.enum([Object.keys(StreamKeys) as unknown as StreamKeyType])
+export const StreamKeyDec = z.union([z.literal(StreamKeys.publish), z.literal(StreamKeys.draft)])
