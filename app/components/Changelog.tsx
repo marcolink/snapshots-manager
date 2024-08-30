@@ -27,7 +27,8 @@ function V1({entries, isLoadingUsers}: { entries: Data[], isLoadingUsers?: boole
     <Stack flexDirection={'column'} alignItems="center">
       {entries.map((entry, index) => {
         return (<Card
-          style={{width: '40%', minWidth: '480px', ...transformX(index)}}
+          // style={{width: '40%', minWidth: '480px', ...transformX(index)}}
+          style={{width: '40%', minWidth: '480px'}}
           badge={<OperationBadge operation={entry.operation}/>}
           key={`${entry.id} ${entry.operation}`}
           marginBottom={'spacingM'}

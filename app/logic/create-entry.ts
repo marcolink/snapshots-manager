@@ -78,6 +78,7 @@ async function getReferenceEntry(data: Params) {
       and(
         eq(entries.space, data.space),
         eq(entries.environment, data.environment),
+        eq(entries.entry, data.raw.sys.id),
         inArray(entries.operation, Streams[stream]),
       )
     )

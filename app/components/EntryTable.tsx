@@ -46,7 +46,7 @@ export function EntryTable({entries, isUsersLoading = false}: { entries: Data[],
     accessor('matches', {
       header: () => 'Matches',
       // @ts-ignore
-      cell: (info) => <Badge variant="secondary">{info.getValue().length}</Badge>
+      cell: (info) => <Badge variant="secondary">{info.getValue().length -1}</Badge>
     }),
     accessor('patch', {
       header: () => 'Patch Size',
