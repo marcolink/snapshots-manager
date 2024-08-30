@@ -5,8 +5,5 @@ export function createHashedContent({metadata, fields}: {
   fields: EntryProps['fields'],
   metadata: EntryProps['metadata'],
 }) {
-  return {
-    signature: createHash(({metadata, fields})),
-    content: {metadata, fields}
-  }
+  return createHash(({metadata, fields}))
 }

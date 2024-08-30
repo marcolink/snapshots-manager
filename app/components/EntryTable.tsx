@@ -42,6 +42,12 @@ export function EntryTable({entries, isUsersLoading = false}: { entries: Data[],
       header: () => 'Operation',
       cell: (info) => <OperationBadge operation={info.getValue()}/>
     }),
+    // @ts-ignore
+    accessor('matches', {
+      header: () => 'Matches',
+      // @ts-ignore
+      cell: (info) => <Badge variant="secondary">{info.getValue().length}</Badge>
+    }),
     accessor('patch', {
       header: () => 'Patch Size',
       cell: (info) => {

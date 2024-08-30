@@ -1,6 +1,6 @@
 import {EntryProps} from "contentful-management";
 import {db} from "~/database";
-import {entries, signature_content} from "~/database/schema";
+import {entries} from "~/database/schema";
 import {and, desc, eq, inArray} from "drizzle-orm";
 import {generateJSONPatch} from "generate-json-patch";
 import {WebhookActions} from "~/types";
@@ -30,42 +30,24 @@ export const createEntry = async (data: Params) => {
   });
 
   console.time('hash')
-  const hashed = createHashedContent({
+  const signature = createHashedContent({
     fields: target.fields,
     metadata: target.metadata,
   })
   console.timeEnd('hash')
 
-  return db.transaction(async (trx) => {
-    const existingHash = await trx.select({signature: signature_content.signature}).from(signature_content)
-      .where(eq(signature_content.signature, hashed.signature))
-      .limit(1)
-      .execute();
-
-    if (existingHash.length === 0) {
-      console.log('Inserting new hash', hashed.signature)
-      await trx.insert(signature_content).values({
-        signature: hashed.signature,
-        data: hashed.content,
-        space: data.space,
-      })
-    } else {
-      console.log('Hash already exists', hashed.signature)
-    }
-
-    return trx.insert(entries).values({
-      // @ts-ignore
-      version: data.raw.sys.revision || data.raw.sys.version,
-      space: data.space,
-      environment: data.environment,
-      raw_entry: data.raw,
-      entry: data.raw.sys.id,
-      operation: data.operation,
-      byUser: data.byUser,
-      patch: patch,
-      signature: hashed.signature
-    }).returning().execute();
-  })
+  return db.insert(entries).values({
+    // @ts-ignore
+    version: data.raw.sys.revision || data.raw.sys.version,
+    space: data.space,
+    environment: data.environment,
+    raw_entry: data.raw,
+    entry: data.raw.sys.id,
+    operation: data.operation,
+    byUser: data.byUser,
+    patch: patch,
+    signature
+  }).returning().execute();
 }
 
 function getDefaultReferenceEntry(data: Params) {
