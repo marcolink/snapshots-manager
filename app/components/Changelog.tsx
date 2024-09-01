@@ -13,12 +13,13 @@ import {ArrowDownwardIcon, ArrowUpwardIcon, AssetIcon, EditIcon, EntryIcon, Plus
 import {isContentfulAssetLink, isContentfulEntryLink} from "~/utils/is-contentful-link";
 import {printVersion} from "~/utils/change-version";
 import {Timeline} from "~/components/Timeline";
+import {createFieldChange, FieldChange} from "~/components/PatchComponent";
 
 type Data = EntryData & { user?: UserProps }
 
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 
-export function Changelog({entries, isLoadingUsers}: { entries: Data[], isLoadingUsers?: boolean }) {
+export function Changelog({entries, isLoadingUsers, locales}: { entries: Data[], isLoadingUsers?: boolean, locales?: string[] }) {
   return (
     <div style={{minWidth: '900px', width: '90%'}}>
       <Timeline
@@ -94,17 +95,10 @@ function SnapshotContent({entry}: { entry: EntryData }) {
     </>)
 }
 
-type FieldChange = {
-  changeTpe: Operation['op']
-  locale?: string,
-  field: string,
-  value: string | null
-}
-
 function filterFieldPatch(patch: Patch): FieldChange[] {
   return patch.filter((operation) => {
     return operation.path.startsWith('/fields')
-  }).map(createFieldChange)
+  }).flatMap((operation) => createFieldChange(operation, ['en-US', 'de']))
 }
 
 function printValue(value: any) {
@@ -121,24 +115,6 @@ function printValue(value: any) {
     return <pre>{JSON.stringify(value, null, 2)}</pre>
   }
   return <i>"{value}"</i>
-}
-
-function createFieldChange(operation: Operation): FieldChange {
-  const fieldSegments = operation.path.split('/')
-  const field = fieldSegments[2]
-
-  if (!Object.hasOwn(operation, 'value')) {
-    return {field, locale: '', value: null, changeTpe: operation.op}
-  }
-
-  // we have to respect multiple locales here
-  // @ts-ignore
-  const locale = fieldSegments.length > 3 ? fieldSegments[3] : Object.keys(operation.value)[0]
-
-  // @ts-ignore
-  const value = typeof operation.value === 'string' ? operation.value : operation.value[locale]
-
-  return {field, locale, value, changeTpe: operation.op}
 }
 
 function badgeVariant(changeType: Operation['op']): BadgeVariant {
@@ -179,5 +155,3 @@ function renderFieldsPatch(patch: Patch): ReactNode[] {
   }
   return list
 }
-
-
