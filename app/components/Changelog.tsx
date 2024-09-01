@@ -13,6 +13,7 @@ import {List, ListItem} from "@contentful/f36-list";
 import {AssetIcon, EntryIcon} from "@contentful/f36-icons";
 import {isContentfulAssetLink, isContentfulEntryLink} from "~/utils/is-contentful-link";
 import {printVersion} from "~/utils/change-version";
+import {isPublishStream, streamKeyForOperation} from "~/logic/streams";
 
 type Data = EntryData & { user?: UserProps }
 
@@ -20,17 +21,53 @@ function transformX(index: number) {
   return {transform: `translateX(${(index % 2 ? 1 : -1) * 52}%)`}
 }
 
+function transformByOperation(operation: WebhookActions) {
+  let translate: string
+  const stream = streamKeyForOperation(operation)
+
+  switch (stream) {
+    case 'publish':
+      translate = '-52%'
+      break
+    case 'draft':
+      translate = '52%'
+      break
+    default:
+      translate = '0'
+  }
+
+  console.log('translate', {transform: `translateX(${translate})`})
+
+  return {transform: `translateX(${translate})`}
+}
+
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 
 function V1({entries, isLoadingUsers}: { entries: Data[], isLoadingUsers?: boolean }) {
 
+  let isProd = false
+  let isPrev = false
+
+
   return (
     <Stack flexDirection={'column'} alignItems="center">
       {entries.map((entry, index) => {
+
+        let additionalBadge = null
+
+        if(!isProd && isPublishStream(entry.operation as WebhookActions)) {
+          additionalBadge = <Badge variant={'warning'} className={'mr-1'}>Production</Badge>
+          isProd = true
+        } else if(!isPrev && !isPublishStream(entry.operation as WebhookActions)) {
+          additionalBadge = <Badge variant={'warning'} className={'mr-1'}>Preview</Badge>
+          isPrev = true
+        }
+
+
         return (<Card
-          // style={{width: '40%', minWidth: '480px', ...transformX(index)}}
-          style={{width: '40%', minWidth: '480px'}}
-          badge={<OperationBadge operation={entry.operation}/>}
+          style={{width: '40%', minWidth: '400px', ...transformByOperation(entry.operation as WebhookActions)}}
+          // style={{width: '40%', minWidth: '480px'}}
+          badge={<>{additionalBadge}<OperationBadge operation={entry.operation}/></>}
           key={`${entry.id} ${entry.operation}`}
           marginBottom={'spacingM'}
           title={`${printVersion(entry)} - ${formatRelativeDateTime(entry.createdAt)}`}
