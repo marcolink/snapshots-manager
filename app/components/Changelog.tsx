@@ -78,6 +78,9 @@ function printValue(value: any) {
   if (isContentfulAssetLink(value)) {
     return <i><AssetIcon/> {value.sys.id}</i>
   }
+  if(Array.isArray(value)) {
+    return <>{value.map(value => `"${value}"`).join(', ')}</>
+  }
   if (typeof value === 'object') {
     return <pre>{JSON.stringify(value, null, 2)}</pre>
   }
@@ -92,6 +95,7 @@ function createFieldChange(operation: Operation): FieldChange {
     return {field, locale: '', value: null, changeTpe: operation.op}
   }
 
+  // we have to respect multiple locales here
   // @ts-ignore
   const locale = fieldSegments.length > 3 ? fieldSegments[3] : Object.keys(operation.value)[0]
 

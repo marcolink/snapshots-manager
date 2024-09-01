@@ -9,6 +9,7 @@ import {ComponentProps} from "react";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {client} from "~/logic";
+import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
@@ -44,6 +45,7 @@ export default function Sidebar() {
 
   return (
     <div>
+      <UpdateOnSysChange/>
       <EntityList>
         {data.map(entry => {
           const patchLength = Array.isArray(entry.patch) ? entry.patch.length : 0

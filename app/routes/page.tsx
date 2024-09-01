@@ -1,4 +1,4 @@
-import {ActionFunctionArgs, json, LoaderFunctionArgs} from "@remix-run/node";
+import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {Form, useLoaderData, useSubmit} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
 import {EntryTable} from "~/components/EntryTable";
@@ -13,8 +13,6 @@ import {ExistingSearchParams} from "~/components/ExistingSearchParams";
 export const loader = async ({request}: LoaderFunctionArgs) => {
   // await db.delete(entries).execute();
 
-  console.log('entity-list LOADER')
-
   const q = toRecord(new URL(request.url).searchParams)
   const stream = StreamKeyDec.catch(StreamKeys.publish).parse(q.stream)
 
@@ -22,11 +20,6 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
 
   const data = await client.getEntries({q: {space: q.space, stream}})
   return json({data, stream})
-}
-
-export const action = async ({request}: ActionFunctionArgs) => {
-  console.log('entity-list ACTION')
-  return json({data: []})
 }
 
 export default function Page() {
