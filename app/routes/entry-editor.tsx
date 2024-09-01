@@ -11,8 +11,6 @@ import {StreamSelect} from "~/components/StreamSelect";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-  console.log('entity-list LOADER')
-
   // await db.delete(entries);
   const q = toRecord(new URL(request.url).searchParams)
   const stream = StreamKeyDec.catch(StreamKeys.publish).parse(q.stream)

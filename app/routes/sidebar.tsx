@@ -12,7 +12,6 @@ import {client} from "~/logic";
 import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
 import {promiseHash} from "remix-utils/promise";
 import {Box} from "@contentful/f36-core";
-import {isPublishStream} from "~/logic/streams";
 import {printVersion} from "~/utils/change-version";
 
 const MAX_VIEW_ITEMS = 10
