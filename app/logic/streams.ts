@@ -12,7 +12,7 @@ export const Streams: Record<StreamKeyType, WebhookActions[]> = {
 } as const
 
 export function streamKeyForOperation(operation: WebhookActions): keyof typeof StreamKeys {
-  if(Streams.publish.includes(operation)) {
+  if(isPublishStream(operation)) {
     return StreamKeys.publish
   } else if(Streams.draft.includes(operation)) {
     return StreamKeys.draft
@@ -22,3 +22,5 @@ export function streamKeyForOperation(operation: WebhookActions): keyof typeof S
 }
 
 export const StreamKeyDec = z.union([z.literal(StreamKeys.publish), z.literal(StreamKeys.draft)])
+
+export const isPublishStream = (key: WebhookActions): boolean => Streams.publish.includes(key)

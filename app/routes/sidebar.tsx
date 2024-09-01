@@ -10,16 +10,28 @@ import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {client} from "~/logic";
 import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
+import {promiseHash} from "remix-utils/promise";
+import {Box} from "@contentful/f36-core";
+import {isPublishStream} from "~/logic/streams";
+import {printVersion} from "~/utils/change-version";
+
+const MAX_VIEW_ITEMS = 10
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
-  const data = await client.getEntries({
-    q: {
-      ...q, environment: q.environmentAlias || q.environment
-    }, limit: 10
-  })
 
-  return json({data})
+  return json(await promiseHash({
+    data: client.getEntries({
+      q: {
+        ...q, environment: q.environmentAlias || q.environment
+      }, limit: MAX_VIEW_ITEMS
+    }),
+    metadata: client.getEntriesCount({
+      q: {
+        ...q, environment: q.environmentAlias || q.environment
+      }
+    })
+  }))
 }
 
 const OperationMap: Record<WebhookActions, ComponentProps<typeof EntityList.Item>['status']> = {
@@ -36,7 +48,7 @@ const OperationMap: Record<WebhookActions, ComponentProps<typeof EntityList.Item
 export default function Sidebar() {
   useContentfulAutoResizer()
 
-  const {data: entries} = useLoaderData<typeof loader>()
+  const {data: entries, metadata} = useLoaderData<typeof loader>()
   const {data} = useWithContentfulUsers(entries)
 
   if (data.length === 0) {
@@ -54,11 +66,16 @@ export default function Sidebar() {
             thumbnailUrl={entry.user?.avatarUrl}
             withThumbnail={true}
             title={formatRelativeDateTime(entry.createdAt)}
-            description={`v${entry.version} | changes: ${patchLength}`}
+            description={`${printVersion(entry)} | changes: ${patchLength}`}
             status={OperationMap[entry.operation as WebhookActions]}
           />
         })}
       </EntityList>
+      {metadata.count > MAX_VIEW_ITEMS && (
+        <Box paddingTop={'spacingM'}>
+          <Note>{`Showing last 10 of ${metadata.count} snapshots`}</Note>
+        </Box>
+      )}
     </div>
   );
 }

@@ -12,6 +12,7 @@ import {Badge, BadgeVariant} from "@contentful/f36-badge";
 import {List, ListItem} from "@contentful/f36-list";
 import {AssetIcon, EntryIcon} from "@contentful/f36-icons";
 import {isContentfulAssetLink, isContentfulEntryLink} from "~/utils/is-contentful-link";
+import {printVersion} from "~/utils/change-version";
 
 type Data = EntryData & { user?: UserProps }
 
@@ -32,7 +33,7 @@ function V1({entries, isLoadingUsers}: { entries: Data[], isLoadingUsers?: boole
           badge={<OperationBadge operation={entry.operation}/>}
           key={`${entry.id} ${entry.operation}`}
           marginBottom={'spacingM'}
-          title={`v${entry.version} - ${formatRelativeDateTime(entry.createdAt)}`}
+          title={`${printVersion(entry)} - ${formatRelativeDateTime(entry.createdAt)}`}
         >
           <User user={entry.user} isLoading={isLoadingUsers}/>
           {detailOperations.includes(entry.operation as WebhookActions) && <SnapshotContent entry={entry}/>}

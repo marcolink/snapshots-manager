@@ -15,7 +15,7 @@ export function UpdateOnSysChange() {
       setTimeout(() => {
         setLastUpdatedAt(event.updatedAt)
         submit(updateFormRef.current)
-      }, 700)
+      }, 1200)
     }
   }, [submit])
 
