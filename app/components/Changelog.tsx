@@ -2,7 +2,6 @@ import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {EntryData, WebhookActions} from "~/types";
 import {UserProps} from "contentful-management";
 import {Card} from "@contentful/f36-card";
-import {Stack} from "@contentful/f36-core";
 import {OperationBadge} from "~/components/OperationBadge";
 import {User} from "~/components/User";
 import {Operation, Patch} from "generate-json-patch";
@@ -10,74 +9,73 @@ import {SectionHeading} from "@contentful/f36-typography";
 import {ReactNode} from "react";
 import {Badge, BadgeVariant} from "@contentful/f36-badge";
 import {List, ListItem} from "@contentful/f36-list";
-import {AssetIcon, EntryIcon} from "@contentful/f36-icons";
+import {ArrowDownwardIcon, ArrowUpwardIcon, AssetIcon, EditIcon, EntryIcon, PlusIcon} from "@contentful/f36-icons";
 import {isContentfulAssetLink, isContentfulEntryLink} from "~/utils/is-contentful-link";
 import {printVersion} from "~/utils/change-version";
-import {isPublishStream, streamKeyForOperation} from "~/logic/streams";
+import {Timeline} from "~/components/Timeline";
 
 type Data = EntryData & { user?: UserProps }
 
-function transformX(index: number) {
-  return {transform: `translateX(${(index % 2 ? 1 : -1) * 52}%)`}
-}
-
-function transformByOperation(operation: WebhookActions) {
-  let translate: string
-  const stream = streamKeyForOperation(operation)
-
-  switch (stream) {
-    case 'publish':
-      translate = '-52%'
-      break
-    case 'draft':
-      translate = '52%'
-      break
-    default:
-      translate = '0'
-  }
-
-  console.log('translate', {transform: `translateX(${translate})`})
-
-  return {transform: `translateX(${translate})`}
-}
-
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 
-function V1({entries, isLoadingUsers}: { entries: Data[], isLoadingUsers?: boolean }) {
+export function Changelog({entries, isLoadingUsers}: { entries: Data[], isLoadingUsers?: boolean }) {
+  return (
+    <div style={{minWidth: '900px', width: '90%'}}>
+      <Timeline
+        entries={entries}
+        getKey={(entry) => entry.id.toString()}
+        iconRenderer={(entry) => {
+          if (['auto_save', 'save'].includes(entry.operation)) {
+            return {component: <EditIcon variant={'primary'}/>, className: 'bg-blue-200'}
+          }
+          if (entry.operation === 'publish') {
+            return {component: <ArrowUpwardIcon variant={'positive'}/>, className: 'bg-green-200'}
+          }
+          if (entry.operation === 'unpublish') {
+            return {component: <ArrowDownwardIcon variant={'negative'}/>, className: 'bg-gray-200'}
+          }
+          if (entry.operation === 'create') {
+            return {component: <PlusIcon variant={'positive'}/>, className: 'bg-white'}
+          }
+          return {component: <EditIcon variant={'primary'}/>, className: 'bg-gray-200'}
+        }}
+        itemRenderer={(entry) => (
+          <ChangelogEntry
+            entry={entry}
+            isLoadingUsers={isLoadingUsers}
+            isProd={false}
+            isPrev={false}
+          />
+        )}
+      />
+    </div>
+  );
+}
 
-  let isProd = false
-  let isPrev = false
-
+function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev}: {
+  entry: Data,
+  isProd: boolean,
+  isPrev: boolean,
+  isLoadingUsers?: boolean
+}) {
+  let additionalBadge = null
+  if (isProd) {
+    additionalBadge = <Badge variant={'warning'} className={'mr-1'}>Production</Badge>
+  } else if (isPrev) {
+    additionalBadge = <Badge variant={'warning'} className={'mr-1'}>Preview</Badge>
+  }
 
   return (
-    <Stack flexDirection={'column'} alignItems="center">
-      {entries.map((entry, index) => {
-
-        let additionalBadge = null
-
-        if(!isProd && isPublishStream(entry.operation as WebhookActions)) {
-          additionalBadge = <Badge variant={'warning'} className={'mr-1'}>Production</Badge>
-          isProd = true
-        } else if(!isPrev && !isPublishStream(entry.operation as WebhookActions)) {
-          additionalBadge = <Badge variant={'warning'} className={'mr-1'}>Preview</Badge>
-          isPrev = true
-        }
-
-
-        return (<Card
-          style={{width: '40%', minWidth: '400px', ...transformByOperation(entry.operation as WebhookActions)}}
-          // style={{width: '40%', minWidth: '480px'}}
-          badge={<>{additionalBadge}<OperationBadge operation={entry.operation}/></>}
-          key={`${entry.id} ${entry.operation}`}
-          marginBottom={'spacingM'}
-          title={`${printVersion(entry)} - ${formatRelativeDateTime(entry.createdAt)}`}
-        >
-          <User user={entry.user} isLoading={isLoadingUsers}/>
-          {detailOperations.includes(entry.operation as WebhookActions) && <SnapshotContent entry={entry}/>}
-        </Card>)
-      })}
-    </Stack>
-  );
+    <Card
+      className={'overflow-clip'}
+      badge={<>{additionalBadge}<OperationBadge operation={entry.operation}/></>}
+      key={`${entry.id} ${entry.operation}`}
+      title={`${printVersion(entry)} - ${formatRelativeDateTime(entry.createdAt)}`}
+    >
+      <User user={entry.user} isLoading={isLoadingUsers}/>
+      {detailOperations.includes(entry.operation as WebhookActions) && <SnapshotContent entry={entry}/>}
+    </Card>
+  )
 }
 
 function SnapshotContent({entry}: { entry: EntryData }) {
@@ -116,7 +114,7 @@ function printValue(value: any) {
   if (isContentfulAssetLink(value)) {
     return <i><AssetIcon/> {value.sys.id}</i>
   }
-  if(Array.isArray(value)) {
+  if (Array.isArray(value)) {
     return <>{value.map(value => `"${value}"`).join(', ')}</>
   }
   if (typeof value === 'object') {
@@ -182,5 +180,4 @@ function renderFieldsPatch(patch: Patch): ReactNode[] {
   return list
 }
 
-export const Changelog = V1
 

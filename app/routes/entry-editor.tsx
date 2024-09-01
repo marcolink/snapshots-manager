@@ -3,7 +3,6 @@ import {Form, useLoaderData, useSubmit} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
 import {Changelog} from "~/components/Changelog";
-import {Heading} from "@contentful/f36-typography";
 import {Box, Flex} from '@contentful/f36-core';
 import {client} from "~/logic";
 import {StreamKeyDec, StreamKeys} from "~/logic/streams";
@@ -40,10 +39,8 @@ export default function Page() {
         method="get"
         onChange={(event) => submit(event.currentTarget)}>
         <Box padding={'spacingL'}>
-          <Heading>Changelog</Heading>
           <Flex justifyContent={'center'} flexDirection={'column'} alignItems="center">
             <ExistingSearchParams exclude={['stream']}/>
-
             {/*<Form method="post">*/}
             {/* <StreamSelect selected={selected}/>*/}
             {/*</Form>*/}
