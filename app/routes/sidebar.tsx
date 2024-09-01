@@ -16,7 +16,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
   const data = await client.getEntries({
     q: {
       ...q, environment: q.environmentAlias || q.environment
-    }, limit: 100
+    }, limit: 10
   })
 
   return json({data})
