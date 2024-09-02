@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {Operation} from "generate-json-patch";
-import {createFieldChange} from "~/components/PatchComponent";
+import {createFieldChange, createMetadataChange} from "~/components/PatchComponent";
 
 const locales = ['en-US', 'de-DE']
 
@@ -14,8 +14,8 @@ const patches: Record<string, Operation> = {
   }
 }
 
-describe('PatchComponent', () => {
-  it('string', () => {
+describe('createFieldChange', () => {
+  it('detects a string value', () => {
     expect(createFieldChange({
       op: "add",
       path: "/fields/testField",
@@ -29,7 +29,7 @@ describe('PatchComponent', () => {
       value: 'testValue'
     }])
   })
-  it('multiple locales', () => {
+  it('detects a multi locales changes', () => {
     expect(createFieldChange({
       op: "add",
       path: "/fields/testField",
@@ -49,7 +49,7 @@ describe('PatchComponent', () => {
       value: 'testValueDE'
     }])
   })
-  it('detect locale', () => {
+  it('detect value locale', () => {
     expect(createFieldChange({
       op: "add",
       path: "/fields/testField",
@@ -63,7 +63,7 @@ describe('PatchComponent', () => {
       value: 'testValue'
     }])
   })
-  it('array of string', () => {
+  it('detects an array value', () => {
     expect(createFieldChange({
       op: "add",
       path: "/fields/testField",
@@ -77,7 +77,7 @@ describe('PatchComponent', () => {
       value: ["one", "two"]
     }])
   })
-  it('should detect the field', () => {
+  it('detects the field name', () => {
     expect(createFieldChange(patches.newField, locales)).toStrictEqual([{
       changeTpe: 'add',
       field: 'testField',
@@ -85,7 +85,7 @@ describe('PatchComponent', () => {
       value: 'testValue'
     }])
   })
-  it('should detect locale from path', () => {
+  it('detects locale from path', () => {
     expect(createFieldChange({
       op: "add",
       path: "/fields/testField/en-US",
@@ -95,6 +95,37 @@ describe('PatchComponent', () => {
       field: 'testField',
       locale: 'en-US',
       value: 'hello world'
+    }])
+  })
+})
+
+describe('createMetadataChange', () => {
+  it('detects empty concepts', () => {
+    expect(createMetadataChange({
+      "op": "add",
+      "path": "/metadata/concepts",
+      "value": []
+    })).toStrictEqual([{
+      changeTpe: 'add',
+      field: 'concepts',
+      value: "initialized"
+    }])
+  })
+  it('detects add a tag', () => {
+    expect(createMetadataChange({
+      "op": "add",
+      "path": "/metadata/tags/0",
+      "value": {
+        "sys": {
+          "id": "someTag",
+          "type": "Link",
+          "linkType": "Tag"
+        }
+      }
+    })).toStrictEqual([{
+      changeTpe: 'add',
+      field: 'tags',
+      value: 'someTag'
     }])
   })
 })

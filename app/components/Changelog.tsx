@@ -4,22 +4,27 @@ import {UserProps} from "contentful-management";
 import {Card} from "@contentful/f36-card";
 import {OperationBadge} from "~/components/OperationBadge";
 import {User} from "~/components/User";
-import {Operation, Patch} from "generate-json-patch";
-import {SectionHeading} from "@contentful/f36-typography";
-import {ReactNode} from "react";
-import {Badge, BadgeVariant} from "@contentful/f36-badge";
-import {List, ListItem} from "@contentful/f36-list";
-import {ArrowDownwardIcon, ArrowUpwardIcon, AssetIcon, EditIcon, EntryIcon, PlusIcon} from "@contentful/f36-icons";
-import {isContentfulAssetLink, isContentfulEntryLink} from "~/utils/is-contentful-link";
+import {Patch} from "generate-json-patch";
+import {Badge} from "@contentful/f36-badge";
+import {ArrowDownwardIcon, ArrowUpwardIcon, EditIcon, PlusIcon} from "@contentful/f36-icons";
 import {printVersion} from "~/utils/change-version";
 import {Timeline} from "~/components/Timeline";
-import {createFieldChange, FieldChange} from "~/components/PatchComponent";
+import {PatchComponent} from "~/components/PatchComponent";
+import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
+import {EditorAppSDK} from "@contentful/app-sdk";
+import {Flex} from "@contentful/f36-core";
+import {Text} from "@contentful/f36-typography";
 
 type Data = EntryData & { user?: UserProps }
 
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 
-export function Changelog({entries, isLoadingUsers, locales}: { entries: Data[], isLoadingUsers?: boolean, locales?: string[] }) {
+export function Changelog({entries, isLoadingUsers}: {
+  entries: Data[],
+  isLoadingUsers?: boolean,
+}) {
+  const {sdk} = useInBrowserSdk<EditorAppSDK>()
+
   return (
     <div style={{minWidth: '900px', width: '90%'}}>
       <Timeline
@@ -42,6 +47,7 @@ export function Changelog({entries, isLoadingUsers, locales}: { entries: Data[],
         }}
         itemRenderer={(entry) => (
           <ChangelogEntry
+            locales={sdk?.locales.available}
             entry={entry}
             isLoadingUsers={isLoadingUsers}
             isProd={false}
@@ -53,11 +59,12 @@ export function Changelog({entries, isLoadingUsers, locales}: { entries: Data[],
   );
 }
 
-function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev}: {
+function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev, locales = []}: {
   entry: Data,
   isProd: boolean,
   isPrev: boolean,
-  isLoadingUsers?: boolean
+  isLoadingUsers?: boolean,
+  locales?: string[]
 }) {
   let additionalBadge = null
   if (isProd) {
@@ -69,89 +76,16 @@ function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev}: {
   return (
     <Card
       className={'overflow-clip'}
-      badge={<>{additionalBadge}<OperationBadge operation={entry.operation}/></>}
       key={`${entry.id} ${entry.operation}`}
-      title={`${printVersion(entry)} - ${formatRelativeDateTime(entry.createdAt)}`}
     >
+      <Flex justifyContent={'space-between'}>
+        <Text fontWeight={'fontWeightDemiBold'}>
+          <code>{`${printVersion(entry)}`}</code> - {formatRelativeDateTime(entry.createdAt)}</Text>
+        <div>{additionalBadge}<OperationBadge operation={entry.operation}/></div>
+      </Flex>
       <User user={entry.user} isLoading={isLoadingUsers}/>
-      {detailOperations.includes(entry.operation as WebhookActions) && <SnapshotContent entry={entry}/>}
+      {detailOperations.includes(entry.operation as WebhookActions) &&
+          <PatchComponent patch={entry.patch as Patch} locales={locales}/>}
     </Card>
   )
-}
-
-function SnapshotContent({entry}: { entry: EntryData }) {
-  const renderedPatch = renderFieldsPatch(entry.patch as Patch)
-
-  if (renderedPatch.length === 0) {
-    return null
-  }
-
-  return (
-    <>
-      <SectionHeading>Fields</SectionHeading>
-      <List>
-        {renderedPatch.map((patch, index) => <ListItem key={index}>{patch}</ListItem>)}
-      </List>
-    </>)
-}
-
-function filterFieldPatch(patch: Patch): FieldChange[] {
-  return patch.filter((operation) => {
-    return operation.path.startsWith('/fields')
-  }).flatMap((operation) => createFieldChange(operation, ['en-US', 'de']))
-}
-
-function printValue(value: any) {
-  if (isContentfulEntryLink(value)) {
-    return <i><EntryIcon/> {value.sys.id}</i>
-  }
-  if (isContentfulAssetLink(value)) {
-    return <i><AssetIcon/> {value.sys.id}</i>
-  }
-  if (Array.isArray(value)) {
-    return <>{value.map(value => `"${value}"`).join(', ')}</>
-  }
-  if (typeof value === 'object') {
-    return <pre>{JSON.stringify(value, null, 2)}</pre>
-  }
-  return <i>"{value}"</i>
-}
-
-function badgeVariant(changeType: Operation['op']): BadgeVariant {
-  switch (changeType) {
-    case 'add':
-      return 'positive'
-    case 'replace':
-      return 'primary'
-    case 'remove':
-      return 'negative'
-    case 'move':
-      return 'warning'
-    default:
-      console.log('unknown change type', changeType)
-      return 'primary'
-  }
-}
-
-function renderFieldsPatch(patch: Patch): ReactNode[] {
-  const list = []
-  const fieldChanges = filterFieldPatch(patch)
-
-  for (const change of fieldChanges) {
-    // console.log(change)
-    const field = <Badge variant={badgeVariant(change.changeTpe)}>{change.field}</Badge>
-    const locale = change.locale
-    switch (change.changeTpe) {
-      case 'add':
-        list.push(<>{field} ({locale}): {printValue(change.value)}</>)
-        break
-      case 'replace':
-        list.push(<>{field} ({locale}): {printValue(change.value)}</>)
-        break
-      case 'remove':
-        list.push(<>{field} <b>{locale}</b></>)
-        break
-    }
-  }
-  return list
 }
