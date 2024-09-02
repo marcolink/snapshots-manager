@@ -40,7 +40,7 @@ export function Timeline<T extends { createdAt: string }>(
               </div>
 
               <div
-                className={`flex items-center justify-center w-1/10 h-10 bg-white shrink-0 md:order-1 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2`}>
+                className={`flex items-center justify-center w-1/10 h-10 bg-white shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2`}>
                 <Text fontWeight={'fontWeightMedium'} as={'i'}>{dateRenderer(entry)}</Text>
               </div>
 
