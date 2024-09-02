@@ -9,3 +9,9 @@ export const createLinkValidation = (linkType: string) => z.object({
 export const TagValidation = z.object({
   sys: createLinkValidation('Tag'),
 })
+
+export const TaxonomyConceptValidation = z.object({
+  sys: createLinkValidation('TaxonomyConcept'),
+})
+
+export const TagOrConceptValidation = TagValidation.or(TaxonomyConceptValidation)

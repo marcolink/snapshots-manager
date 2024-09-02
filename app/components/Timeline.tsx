@@ -1,3 +1,5 @@
+import {Text} from "@contentful/f36-typography";
+
 export enum Side {
   Left,
   Right,
@@ -8,6 +10,7 @@ type TimelineProps<T extends { createdAt: string }> = {
   entries: T[]
   itemRenderer: (entry: T) => JSX.Element,
   iconRenderer: (entry: T) => { component: JSX.Element, className: string },
+  dateRenderer: (entry: T) => string,
   getKey: (entry: T) => string,
 }
 
@@ -17,6 +20,7 @@ export function Timeline<T extends { createdAt: string }>(
   {
     itemRenderer,
     iconRenderer,
+    dateRenderer,
     getKey,
     entries
   }: TimelineProps<T>) {
@@ -34,6 +38,12 @@ export function Timeline<T extends { createdAt: string }>(
                 className={`flex items-center justify-center w-10 h-10 rounded-full border border-white bg-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 ${icon.className}`}>
                 {icon.component}
               </div>
+
+              <div
+                className={`flex items-center justify-center w-1/10 h-10 bg-white shrink-0 md:order-1 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2`}>
+                <Text fontWeight={'fontWeightMedium'} as={'i'}>{dateRenderer(entry)}</Text>
+              </div>
+
               <div className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)]">
                 {itemRenderer(entry)}
               </div>

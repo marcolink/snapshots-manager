@@ -1,5 +1,5 @@
 import {Operation, Patch} from "generate-json-patch";
-import {TagValidation} from "~/validations/contentful";
+import {TagOrConceptValidation} from "~/validations/contentful";
 import {Badge, BadgeVariant} from "@contentful/f36-badge";
 import {isContentfulAssetLink, isContentfulEntryLink} from "~/utils/is-contentful-link";
 import {AssetIcon, EntryIcon} from "@contentful/f36-icons";
@@ -41,7 +41,6 @@ export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: 
 
 function renderMetadata(patch: FieldChange[]): ReactNode[] {
   const list = []
-
   for (const change of patch) {
     // console.log(change)
     const field = <Badge variant={badgeVariant(change.changeTpe)}>{change.field}</Badge>
@@ -49,7 +48,7 @@ function renderMetadata(patch: FieldChange[]): ReactNode[] {
       case 'add':
       case 'replace':
       case 'move':
-        list.push(<List.Item key={JSON.stringify(change)}>{field} "{change.value}"</List.Item>)
+        list.push(<List.Item key={JSON.stringify(change)}>{field} <i>"{change.value}"</i></List.Item>)
         break
       case 'remove':
         list.push(<List.Item key={JSON.stringify(change)}>{field}</List.Item>)
@@ -126,7 +125,7 @@ export function createFieldChange(operation: Operation, locales: string[] = []):
   let locale = 'all'
 
   if (fieldSegments.length > 3) {
-     locale = fieldSegments[3]
+    locale = fieldSegments[3]
   }
   if (!isValueOperation(operation)) {
     return [{
@@ -182,7 +181,7 @@ export function createMetadataChange(operation: Operation): MetadataChange[] {
   }
 
   value = operation.value
-  const {data} = TagValidation.safeParse(operation.value)
+  const {data} = TagOrConceptValidation.safeParse(operation.value)
 
   if (data) {
     value = data.sys.id

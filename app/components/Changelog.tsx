@@ -14,10 +14,33 @@ import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
 import {EditorAppSDK} from "@contentful/app-sdk";
 import {Flex} from "@contentful/f36-core";
 import {Text} from "@contentful/f36-typography";
+import tokens from "@contentful/f36-tokens";
+import {css} from "emotion";
 
 type Data = EntryData & { user?: UserProps }
 
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
+
+const styles = {
+  publish: css({
+    backgroundColor: tokens.green100,
+  }),
+  unpublish: css({
+    backgroundColor: tokens.yellow100,
+  }),
+  archive: css({
+    backgroundColor: tokens.red100,
+  }),
+  unarchive: css({
+    backgroundColor: tokens.green100,
+  }),
+  save: css({
+    backgroundColor: tokens.blue100,
+  }),
+  create: css({
+    backgroundColor: tokens.blue200,
+  }),
+}
 
 export function Changelog({entries, isLoadingUsers}: {
   entries: Data[],
@@ -54,6 +77,7 @@ export function Changelog({entries, isLoadingUsers}: {
             isPrev={false}
           />
         )}
+        dateRenderer={(entry) => formatRelativeDateTime(entry.createdAt)}
       />
     </div>
   );
@@ -75,17 +99,39 @@ function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev, locales = []}: {
 
   return (
     <Card
-      className={'overflow-clip'}
+      className={`overflow-clip ${bgColorForOperation(entry.operation as WebhookActions)}`}
       key={`${entry.id} ${entry.operation}`}
     >
-      <Flex justifyContent={'space-between'}>
-        <Text fontWeight={'fontWeightDemiBold'}>
-          <code>{`${printVersion(entry)}`}</code> - {formatRelativeDateTime(entry.createdAt)}</Text>
+      <Flex justifyContent="space-between">
+        <Flex>
+          <User user={entry.user} isLoading={isLoadingUsers}/>
+          <Text fontWeight={'fontWeightDemiBold'} marginLeft={'spacingXs'}>
+            <code>{`${printVersion(entry)}`}</code></Text>
+        </Flex>
         <div>{additionalBadge}<OperationBadge operation={entry.operation}/></div>
       </Flex>
-      <User user={entry.user} isLoading={isLoadingUsers}/>
       {detailOperations.includes(entry.operation as WebhookActions) &&
           <PatchComponent patch={entry.patch as Patch} locales={locales}/>}
     </Card>
   )
+}
+
+function bgColorForOperation(operation: WebhookActions) {
+  switch (operation) {
+    case 'publish':
+      return styles.publish
+    case 'unpublish':
+      return styles.unpublish
+    case 'save':
+    case 'auto_save':
+      return styles.save
+    case 'create':
+      return styles.create
+    case "archive":
+      return styles.archive
+    case "unarchive":
+      return styles.unarchive
+    default:
+      return ''
+  }
 }

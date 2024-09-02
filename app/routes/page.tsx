@@ -7,6 +7,7 @@ import {client} from "~/logic";
 import {StreamSelect} from "~/components/StreamSelect";
 import {StreamKeyDec, StreamKeys} from "~/logic/streams";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
+import {promiseHash} from "remix-utils/promise";
 // import {db} from "~/database";
 // import {entries} from "~/database/schema";
 
@@ -18,12 +19,21 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
 
   console.log(q.stream, stream)
 
-  const data = await client.getEntries({q: {space: q.space, stream}})
-  return json({data, stream})
+  return json(await promiseHash({
+    stream: Promise.resolve(stream),
+    data: client.getEntries({q: {space: q.space, stream}}),
+    metadata: client.getEntriesCount({
+      q: {
+        ...q,
+        environment: q.environmentAlias || q.environment,
+        stream: stream
+      }
+    })
+  }))
 }
 
 export default function Page() {
-  const {data: entries, stream} = useLoaderData<typeof loader>()
+  const {data: entries, stream, metadata} = useLoaderData<typeof loader>()
   const {
     data, isUsersLoading,
   } = useWithContentfulUsers(entries)
@@ -38,6 +48,7 @@ export default function Page() {
         <StreamSelect selected={stream}/>
       </Form>
       <EntryTable entries={data}/>
+      {metadata.count}
       <ExistingSearchParams exclude={['stream']}/>
     </div>
   );
