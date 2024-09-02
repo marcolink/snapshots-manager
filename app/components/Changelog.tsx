@@ -104,9 +104,11 @@ function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev, locales = []}: {
     >
       <Flex justifyContent="space-between">
         <Flex>
+          <Text fontWeight={'fontWeightDemiBold'}>
+            <code>{`${printVersion(entry)}`}</code>
+          </Text>
+          <Text marginLeft={'spacing2Xs'} marginRight={'spacing2Xs'}> by </Text>
           <User user={entry.user} isLoading={isLoadingUsers}/>
-          <Text fontWeight={'fontWeightDemiBold'} marginLeft={'spacingXs'}>
-            <code>{`${printVersion(entry)}`}</code></Text>
         </Flex>
         <div>{additionalBadge}<OperationBadge operation={entry.operation}/></div>
       </Flex>

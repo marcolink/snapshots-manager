@@ -6,7 +6,7 @@ import {Paragraph} from "@contentful/f36-typography";
 export function User({user, isLoading = false}: { user?: UserProps, isLoading?: boolean }) {
   return (
     <Flex>
-      <Box marginRight={'spacingS'}>
+      <Box marginRight={'spacingXs'}>
         <Avatar
           isLoading={isLoading}
           size={'tiny'}
