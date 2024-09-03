@@ -30,7 +30,7 @@
     "contentful-management": "^11.31.8",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
-    "generate-json-patch": "^1.1.1",
+    "generate-json-patch": "^1.2.2",
     "isbot": "^4.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

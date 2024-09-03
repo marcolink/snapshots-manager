@@ -1,6 +1,6 @@
 import {db} from "~/database";
 import {entries} from "~/database/schema";
-import {and, count, desc, eq, inArray, sql} from "drizzle-orm";
+import {and, count, eq, inArray} from "drizzle-orm";
 import {Streams} from "~/logic/streams";
 import {StreamsType} from "~/types";
 

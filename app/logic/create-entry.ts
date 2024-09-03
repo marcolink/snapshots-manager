@@ -2,10 +2,10 @@ import {EntryProps} from "contentful-management";
 import {db} from "~/database";
 import {entries} from "~/database/schema";
 import {and, desc, eq, inArray} from "drizzle-orm";
-import {generateJSONPatch} from "generate-json-patch";
 import {WebhookActions} from "~/types";
 import {streamKeyForOperation, Streams} from "~/logic/streams";
-import {createHashedContent} from "~/utils/create-hased-content";
+import {createHashedContent} from "~/utils/create-hashed-content";
+import {createEntryPatch} from "~/utils/create-entry-patch";
 
 type Params = {
   space: string,
@@ -21,20 +21,22 @@ export const createEntry = async (data: Params) => {
   const source = referenceEntry.raw_entry as EntryProps;
   const target = data.raw;
 
-  const patch = generateJSONPatch({
+  console.time('create signature')
+  const signature = createHashedContent({
+    fields: target.fields,
+    metadata: target.metadata,
+  })
+  console.timeEnd('create signature')
+
+  console.time('create patch')
+  const patch = createEntryPatch({
     fields: source.fields,
     metadata: source.metadata,
   }, {
     fields: target.fields,
     metadata: target.metadata,
   });
-
-  console.time('hash')
-  const signature = createHashedContent({
-    fields: target.fields,
-    metadata: target.metadata,
-  })
-  console.timeEnd('hash')
+  console.timeEnd('create patch')
 
   return db.insert(entries).values({
     // @ts-ignore
