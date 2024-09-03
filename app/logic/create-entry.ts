@@ -39,6 +39,10 @@ export const createEntry = async (data: Params) => {
   }, {
     fields: target.fields,
     metadata: target.metadata,
+  }, {
+    array: {
+      ignoreMove: true
+    }
   });
   console.timeEnd('create patch')
 
