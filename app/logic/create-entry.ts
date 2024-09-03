@@ -5,7 +5,7 @@ import {and, desc, eq, inArray} from "drizzle-orm";
 import {WebhookActions} from "~/types";
 import {streamKeyForOperation, Streams} from "~/logic/streams";
 import {createHashedContent} from "~/utils/create-hashed-content";
-import {createEntryPatch} from "~/utils/create-entry-patch";
+import {generateJSONPatch} from "generate-json-patch";
 
 type Params = {
   space: string,
@@ -33,7 +33,7 @@ export const createEntry = async (data: Params) => {
   console.timeEnd('create signature')
 
   console.time('create patch')
-  const patch = createEntryPatch({
+  const patch = generateJSONPatch({
     fields: source.fields,
     metadata: source.metadata,
   }, {
