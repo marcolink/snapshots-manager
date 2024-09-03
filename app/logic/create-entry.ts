@@ -20,6 +20,10 @@ export const createEntry = async (data: Params) => {
 
   const source = referenceEntry.raw_entry as EntryProps;
   const target = data.raw;
+  // @ts-ignore
+  const version = data.raw.sys.revision ?? data.raw.sys.version
+
+  console.log(`reference entry version: ${referenceEntry.version}, current version: ${version}`)
 
   console.time('create signature')
   const signature = createHashedContent({
@@ -39,8 +43,7 @@ export const createEntry = async (data: Params) => {
   console.timeEnd('create patch')
 
   return db.insert(entries).values({
-    // @ts-ignore
-    version: data.raw.sys.revision || data.raw.sys.version,
+    version: version,
     space: data.space,
     environment: data.environment,
     raw_entry: data.raw,
@@ -53,6 +56,7 @@ export const createEntry = async (data: Params) => {
 }
 
 function getDefaultReferenceEntry(data: Params) {
+  console.log('create default reference entry')
   return {
     createdAt: new Date(),
     patch: [],
