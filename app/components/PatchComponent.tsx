@@ -6,6 +6,7 @@ import {AssetIcon, EntryIcon} from "@contentful/f36-icons";
 import {SectionHeading} from "@contentful/f36-typography";
 import {List} from "@contentful/f36-list";
 import {ReactNode} from "react";
+import {z} from "zod";
 
 export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: string[] }) {
   // lazy mofo - make it reduce
@@ -48,7 +49,7 @@ function renderMetadata(patch: FieldChange[]): ReactNode[] {
       case 'add':
       case 'replace':
       case 'move':
-        list.push(<List.Item key={JSON.stringify(change)}>{field} <i>"{change.value}"</i></List.Item>)
+        list.push(<List.Item key={JSON.stringify(change)}>{field} <i>"{JSON.stringify(change.value)}"</i></List.Item>)
         break
       case 'remove':
         list.push(<List.Item key={JSON.stringify(change)}>{field}</List.Item>)
@@ -180,7 +181,25 @@ export function createMetadataChange(operation: Operation): MetadataChange[] {
     }]
   }
 
-  value = operation.value
+  function ensureStringValue(value: any) {
+    if (typeof value === 'string') {
+      return value
+    }
+    if (Array.isArray(value)) {
+      const {success} = z.array(TagOrConceptValidation).safeParse(value)
+      console.log({success, value})
+
+      if (success) {
+        return value.map(link => link.sys.id).join(', ')
+      }
+    }
+    if (typeof value === 'object') {
+      return JSON.stringify(value)
+    }
+    return JSON.stringify(value)
+  }
+
+  value = ensureStringValue(operation.value)
   const {data} = TagOrConceptValidation.safeParse(operation.value)
 
   if (data) {
