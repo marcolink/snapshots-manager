@@ -7,6 +7,7 @@ import {SectionHeading} from "@contentful/f36-typography";
 import {List} from "@contentful/f36-list";
 import {ReactNode} from "react";
 import {z} from "zod";
+import {Tooltip} from "@contentful/f36-tooltip";
 
 export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: string[] }) {
   // lazy mofo - make it reduce
@@ -44,7 +45,14 @@ function renderMetadata(patch: FieldChange[]): ReactNode[] {
   const list = []
   for (const change of patch) {
     // console.log(change)
-    const field = <Badge variant={badgeVariant(change.changeTpe)}>{change.field}</Badge>
+    const field = (
+      <Tooltip placement={'top'} key={JSON.stringify(change)} content={`${change.changeTpe} field ${change.field}`}>
+        <Badge variant={badgeVariant(change.changeTpe)}>
+          {change.field}
+        </Badge>
+      </Tooltip>
+    )
+
     switch (change.changeTpe) {
       case 'add':
       case 'replace':
@@ -64,7 +72,13 @@ function renderFields(patch: FieldChange[]): ReactNode[] {
 
   for (const change of patch) {
     // console.log(change)
-    const field = <Badge variant={badgeVariant(change.changeTpe)}>{change.field}</Badge>
+    const field = (
+      <Tooltip placement={'top'} key={JSON.stringify(change)} content={`${change.changeTpe} field ${change.field}`}>
+        <Badge variant={badgeVariant(change.changeTpe)}>
+          {change.field}
+        </Badge>
+      </Tooltip>
+    )
     const locale = change.locale
     switch (change.changeTpe) {
       case 'add':
