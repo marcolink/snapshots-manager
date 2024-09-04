@@ -6,6 +6,7 @@ import {WebhookActions} from "~/types";
 import {streamKeyForOperation, Streams} from "~/logic/streams";
 import {createHashedContent} from "~/utils/create-hashed-content";
 import {generateJSONPatch} from "generate-json-patch";
+import {createEntryPatch} from "~/utils/create-entry-patch";
 
 type Params = {
   space: string,
@@ -33,16 +34,12 @@ export const createEntry = async (data: Params) => {
   console.timeEnd('create signature')
 
   console.time('create patch')
-  const patch = generateJSONPatch({
+  const patch = createEntryPatch({
     fields: source.fields,
     metadata: source.metadata,
   }, {
     fields: target.fields,
     metadata: target.metadata,
-  }, {
-    array: {
-      ignoreMove: true
-    }
   });
   console.timeEnd('create patch')
 
