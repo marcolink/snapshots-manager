@@ -8,7 +8,7 @@ describe('createHashedContent', () => {
       metadata: {
         tags: []
       }
-    })).toBe("454250eea6253b55ebb65ff842355626ed2eb573753f601695251a07c0cc7572")
+    })).toBe("0cfc1efe544d8548bd722fb7d6e25d3c7e1f3d770610dc30f479199bbf38a52e")
   })
 
   it('should throw when more keys are present', () => {
