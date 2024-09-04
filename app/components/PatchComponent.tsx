@@ -201,8 +201,6 @@ export function createMetadataChange(operation: Operation): MetadataChange[] {
     }
     if (Array.isArray(value)) {
       const {success} = z.array(TagOrConceptValidation).safeParse(value)
-      console.log({success, value})
-
       if (success) {
         return value.map(link => link.sys.id).join(', ')
       }
