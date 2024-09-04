@@ -1,5 +1,5 @@
 import {Operation, Patch} from "generate-json-patch";
-import {TagOrConceptValidation} from "~/validations/contentful";
+import {LooseRichTextFieldValidation, TagOrConceptValidation} from "~/validations/contentful";
 import {Badge, BadgeVariant} from "@contentful/f36-badge";
 import {isContentfulAssetLink, isContentfulEntryLink} from "~/utils/is-contentful-link";
 import {AssetIcon, EntryIcon} from "@contentful/f36-icons";
@@ -8,23 +8,25 @@ import {List} from "@contentful/f36-list";
 import {ReactNode} from "react";
 import {z} from "zod";
 import {Tooltip} from "@contentful/f36-tooltip";
+import {documentToReactComponents} from "@contentful/rich-text-react-renderer";
 
 export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: string[] }) {
   // lazy mofo - make it reduce
   const fieldPatch = patch
     .filter(operation => operation.path.startsWith('/fields'))
-    .flatMap((operation) => createFieldChange(operation, locales))
+  const fieldChanges = fieldPatch.flatMap((operation) => createFieldChange(operation, locales))
+
   const metadataPatch = patch
     .filter(operation => operation.path.startsWith('/metadata'))
     .flatMap(createMetadataChange)
 
   return (
     <>
-      {Boolean(fieldPatch.length) && (
+      {Boolean(fieldChanges.length) && (
         <>
           <SectionHeading marginTop={'spacingS'} marginBottom={'spacingXs'}>Fields</SectionHeading>
           <List>
-            {renderFields(fieldPatch)}
+            {renderFields(fieldChanges)}
           </List>
         </>
       )}
@@ -57,7 +59,7 @@ function renderMetadata(patch: FieldChange[]): ReactNode[] {
       case 'add':
       case 'replace':
       case 'move':
-        list.push(<List.Item key={JSON.stringify(change)}>{field} <i>"{JSON.stringify(change.value)}"</i></List.Item>)
+        list.push(<List.Item key={JSON.stringify(change)}>{field} {JSON.stringify(change.value)}</List.Item>)
         break
       case 'remove':
         list.push(<List.Item key={JSON.stringify(change)}>{field}</List.Item>)
@@ -84,10 +86,10 @@ function renderFields(patch: FieldChange[]): ReactNode[] {
       case 'add':
       case 'replace':
         list.push(<List.Item
-          key={JSON.stringify(change)}>{field} ({locale}): <i>{printValue(change.value)}</i></List.Item>)
+          key={JSON.stringify(change)}>{field} ({locale})<br/><i>{printValue(change.value)}</i></List.Item>)
         break
       case 'remove':
-        list.push(<List.Item key={JSON.stringify(change)}>{field} ({locale})</List.Item>)
+        list.push(<List.Item key={JSON.stringify(change)}>{field}<br/>({locale})</List.Item>)
         break
     }
   }
@@ -110,6 +112,11 @@ function printValue(value: any) {
   }
   if (Array.isArray(value)) {
     return <>{value.map(value => `"${value}"`).join(', ')}</>
+  }
+
+  const {success: isRichText} = LooseRichTextFieldValidation.safeParse(value)
+  if (isRichText) {
+    return documentToReactComponents(value)
   }
   if (typeof value === 'object') {
     return <pre>{JSON.stringify(value, null, 2)}</pre>
@@ -152,7 +159,12 @@ export function createFieldChange(operation: Operation, locales: string[] = []):
   }
 
   if (locales.length > 0 && typeof operation.value === 'object') {
-    const patchLocales = Object.keys(operation.value).filter(locale => locales.includes(locale))
+    if (fieldSegments.length > 3) {
+      return [{field, locale, value: operation.value, changeTpe: operation.op}]
+    }
+
+    const patchLocales = fieldSegments.length > 3 ? [locale] : Object.keys(operation.value).filter(locale => locales.includes(locale))
+
     return patchLocales.map(locale => {
       const value = typeof operation.value === 'string' ? operation.value : operation.value[locale]
       return {field, locale, value, changeTpe: operation.op}
