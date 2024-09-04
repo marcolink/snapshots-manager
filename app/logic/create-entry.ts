@@ -5,7 +5,6 @@ import {and, desc, eq, inArray} from "drizzle-orm";
 import {WebhookActions} from "~/types";
 import {streamKeyForOperation, Streams} from "~/logic/streams";
 import {createHashedContent} from "~/utils/create-hashed-content";
-import {generateJSONPatch} from "generate-json-patch";
 import {createEntryPatch} from "~/utils/create-entry-patch";
 
 type Params = {
@@ -41,6 +40,7 @@ export const createEntry = async (data: Params) => {
     fields: target.fields,
     metadata: target.metadata,
   });
+
   console.timeEnd('create patch')
 
   return db.insert(entries).values({
