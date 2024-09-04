@@ -20,7 +20,10 @@ export function createEntryPatch(
     }, {
       metadata: targetContent.metadata
     }, {
-      maxDepth: 3
+      maxDepth: 3,
+      array: {
+        ignoreMove: true
+      }
     })
   ];
 }
