@@ -3,16 +3,16 @@ import {useMemo} from "react";
 import {Table} from "@contentful/f36-table";
 import {Patch} from "generate-json-patch";
 import {Badge} from "@contentful/f36-badge";
-import {EntryData} from "~/types";
+import {EntryDataWithUser} from "~/types";
 import {RelativeDateTime} from "@contentful/f36-datetime";
-import {UserProps} from "contentful-management";
 import {OperationBadge} from "~/components/OperationBadge";
 import {User} from "~/components/User";
 
-type Data = EntryData & { user?: UserProps }
-
-export function EntryTable({entries, isUsersLoading = false}: { entries: Data[], isUsersLoading?:boolean }) {
-  const {accessor} = createColumnHelper<Data>()
+export function EntryTable({entries, isUsersLoading = false}: {
+  entries: EntryDataWithUser[],
+  isUsersLoading?: boolean
+}) {
+  const {accessor} = createColumnHelper<EntryDataWithUser>()
   const columns = useMemo(() => [
     accessor('version', {
       header: () => 'Version',
@@ -46,7 +46,7 @@ export function EntryTable({entries, isUsersLoading = false}: { entries: Data[],
     accessor('matches', {
       header: () => 'Matches',
       // @ts-ignore
-      cell: (info) => <Badge variant="secondary">{info.getValue().length -1}</Badge>
+      cell: (info) => <Badge variant="secondary">{info.getValue().length - 1}</Badge>
     }),
     accessor('patch', {
       header: () => 'Patch Size',

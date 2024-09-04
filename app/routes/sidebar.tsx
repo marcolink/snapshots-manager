@@ -1,5 +1,5 @@
 import {json, LoaderFunctionArgs} from "@remix-run/node";
-import {useLoaderData} from "@remix-run/react";
+import {Form, useLoaderData} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
 import {useContentfulAutoResizer} from "~/hooks/useContentfulAutoResizer";
 import {EntityList} from "@contentful/f36-entity-list";
@@ -11,8 +11,11 @@ import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {client} from "~/logic";
 import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
 import {promiseHash} from "remix-utils/promise";
-import {Box} from "@contentful/f36-core";
+import {Box, Flex} from "@contentful/f36-core";
 import {printVersion} from "~/utils/change-version";
+import {ExistingSearchParams} from "~/components/ExistingSearchParams";
+import {IconButton} from "@contentful/f36-button";
+import {CycleIcon} from "@contentful/f36-icons";
 
 const MAX_VIEW_ITEMS = 10
 
@@ -75,6 +78,13 @@ export default function Sidebar() {
           <Note>{`Showing last 10 of ${metadata.count} snapshots`}</Note>
         </Box>
       )}
+
+      <Flex paddingTop={'spacingM'} justifyContent={'flex-end'}>
+        <Form method="get">
+          <ExistingSearchParams/>
+          <IconButton size={'small'} icon={<CycleIcon/>} aria-label={'reload'} type={'submit'}>Reload</IconButton>
+        </Form>
+      </Flex>
     </div>
   );
 }

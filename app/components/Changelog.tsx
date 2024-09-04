@@ -1,12 +1,11 @@
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
-import {EntryData, WebhookActions} from "~/types";
-import {UserProps} from "contentful-management";
+import {EntryDataWithUser, WebhookActions} from "~/types";
 import {Card} from "@contentful/f36-card";
 import {OperationBadge} from "~/components/OperationBadge";
 import {User} from "~/components/User";
 import {Patch} from "generate-json-patch";
 import {Badge} from "@contentful/f36-badge";
-import {ArrowDownwardIcon, ArrowUpwardIcon, EditIcon, PlusIcon} from "@contentful/f36-icons";
+import {ArrowDownwardIcon, ArrowUpwardIcon, EditIcon, PlusIcon, PreviewIcon} from "@contentful/f36-icons";
 import {printVersion} from "~/utils/change-version";
 import {Timeline} from "~/components/Timeline";
 import {PatchComponent} from "~/components/PatchComponent";
@@ -16,8 +15,11 @@ import {Flex} from "@contentful/f36-core";
 import {Text} from "@contentful/f36-typography";
 import tokens from "@contentful/f36-tokens";
 import {css} from "emotion";
+import {EntryDetailsModal} from "~/components/EntryDetailsModal";
+import {useState} from "react";
+import {IconButton} from "@contentful/f36-button";
+import {Tooltip} from "@contentful/f36-tooltip";
 
-type Data = EntryData & { user?: UserProps }
 
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 
@@ -43,13 +45,25 @@ const styles = {
 }
 
 export function Changelog({entries, isLoadingUsers}: {
-  entries: Data[],
+  entries: EntryDataWithUser[],
   isLoadingUsers?: boolean,
 }) {
   const {sdk} = useInBrowserSdk<EditorAppSDK>()
+  const [isModalShown, setIsModalShown] = useState<boolean>(false)
+  const [detailsData, setDetailsData] = useState<EntryDataWithUser | null>(null)
+
+  function onShowDetails(entry: EntryDataWithUser) {
+    setDetailsData(entry)
+    setIsModalShown(true)
+  }
+
+  function onHideDetails() {
+    setIsModalShown(false)
+  }
 
   return (
     <div style={{minWidth: '900px', width: '90%'}}>
+      <EntryDetailsModal onClose={onHideDetails} entry={detailsData!} isShown={isModalShown}/>
       <Timeline
         entries={entries}
         getKey={(entry) => entry.id.toString()}
@@ -70,6 +84,7 @@ export function Changelog({entries, isLoadingUsers}: {
         }}
         itemRenderer={(entry) => (
           <ChangelogEntry
+            showDetails={onShowDetails}
             locales={sdk?.locales.available}
             entry={entry}
             isLoadingUsers={isLoadingUsers}
@@ -83,12 +98,13 @@ export function Changelog({entries, isLoadingUsers}: {
   );
 }
 
-function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev, locales = []}: {
-  entry: Data,
+function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev, locales = [], showDetails}: {
+  entry: EntryDataWithUser,
   isProd: boolean,
   isPrev: boolean,
   isLoadingUsers?: boolean,
-  locales?: string[]
+  locales?: string[],
+  showDetails: (entry: EntryDataWithUser) => void
 }) {
   let additionalBadge = null
   if (isProd) {
@@ -99,7 +115,7 @@ function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev, locales = []}: {
 
   return (
     <Card
-      className={`overflow-clip ${bgColorForOperation(entry.operation as WebhookActions)}`}
+      className={`${bgColorForOperation(entry.operation as WebhookActions)}`}
       key={`${entry.id} ${entry.operation}`}
     >
       <Flex justifyContent="space-between">
@@ -114,6 +130,18 @@ function ChangelogEntry({entry, isLoadingUsers, isProd, isPrev, locales = []}: {
       </Flex>
       {detailOperations.includes(entry.operation as WebhookActions) &&
           <PatchComponent patch={entry.patch as Patch} locales={locales}/>}
+
+      <Flex marginTop={'spacingM'} justifyContent={'flex-end'} gap={'spacingXs'}>
+        <Tooltip content={'Show details'} placement={'top'}>
+          <IconButton
+            size={'small'}
+            variant={'secondary'}
+            aria-label={'show details'}
+            onClick={() => showDetails(entry)}
+            icon={<PreviewIcon/>}
+          />
+        </Tooltip>
+      </Flex>
     </Card>
   )
 }

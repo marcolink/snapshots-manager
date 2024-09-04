@@ -46,10 +46,10 @@ export default function Page() {
         method="get"
         onChange={(event) => submit(event.currentTarget)}>
         <StreamSelect selected={stream}/>
+        <ExistingSearchParams exclude={['stream']}/>
       </Form>
       <EntryTable entries={data}/>
       {metadata.count}
-      <ExistingSearchParams exclude={['stream']}/>
     </div>
   );
 }
