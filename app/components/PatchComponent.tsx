@@ -2,13 +2,14 @@ import {Operation, Patch} from "generate-json-patch";
 import {LooseRichTextFieldValidation, TagOrConceptValidation} from "~/validations/contentful";
 import {Badge, BadgeVariant} from "@contentful/f36-badge";
 import {isContentfulAssetLink, isContentfulEntryLink} from "~/utils/is-contentful-link";
-import {AssetIcon, EntryIcon} from "@contentful/f36-icons";
+import {AssetIcon, DeleteIcon, EntryIcon, TagsIcon} from "@contentful/f36-icons";
 import {SectionHeading} from "@contentful/f36-typography";
 import {List} from "@contentful/f36-list";
 import {ReactNode} from "react";
-import {z} from "zod";
 import {Tooltip} from "@contentful/f36-tooltip";
 import {documentToReactComponents} from "@contentful/rich-text-react-renderer";
+import {createFieldChange, createMetadataChange} from "~/utils/patch-utils";
+import {z} from "zod";
 
 export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: string[] }) {
   // lazy mofo - make it reduce
@@ -43,6 +44,28 @@ export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: 
   )
 }
 
+function renderMetaDataLinks(value: any) {
+
+  const {data, success} = z.array(TagOrConceptValidation).safeParse(value)
+  if(!success) {
+    return JSON.stringify(value)
+  }
+
+  if(data.length === 0) {
+    return <DeleteIcon/>
+  }
+
+  return (
+    <ul>
+      {data.map(({sys}) => (
+        <li key={sys.id}>
+          {sys.linkType === 'Tag' ? <TagsIcon/> : <EntryIcon/>} <code>{sys.id}</code>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 function renderMetadata(patch: FieldChange[]): ReactNode[] {
   const list = []
   for (const change of patch) {
@@ -59,7 +82,7 @@ function renderMetadata(patch: FieldChange[]): ReactNode[] {
       case 'add':
       case 'replace':
       case 'move':
-        list.push(<List.Item key={JSON.stringify(change)}>{field} {JSON.stringify(change.value)}</List.Item>)
+        list.push(<List.Item key={JSON.stringify(change)}>{field} {renderMetaDataLinks(change.value)}</List.Item>)
         break
       case 'remove':
         list.push(<List.Item key={JSON.stringify(change)}>{field}</List.Item>)
@@ -68,6 +91,8 @@ function renderMetadata(patch: FieldChange[]): ReactNode[] {
   }
   return list
 }
+
+
 
 function renderFields(patch: FieldChange[]): ReactNode[] {
   const list = []
@@ -138,106 +163,4 @@ function badgeVariant(changeType: Operation['op']): BadgeVariant {
       console.log('unknown change type', changeType)
       return 'primary'
   }
-}
-
-export function createFieldChange(operation: Operation, locales: string[] = []): FieldChange[] {
-  const fieldSegments = operation.path.split('/')
-  const field = fieldSegments[2]
-
-  let locale = 'all'
-
-  if (fieldSegments.length > 3) {
-    locale = fieldSegments[3]
-  }
-  if (!isValueOperation(operation)) {
-    return [{
-      field,
-      locale,
-      value: null,
-      changeTpe: operation.op
-    }]
-  }
-
-  if (locales.length > 0 && typeof operation.value === 'object') {
-    if (fieldSegments.length > 3) {
-      return [{field, locale, value: operation.value, changeTpe: operation.op}]
-    }
-
-    const patchLocales = fieldSegments.length > 3 ? [locale] : Object.keys(operation.value).filter(locale => locales.includes(locale))
-
-    return patchLocales.map(locale => {
-      const value = typeof operation.value === 'string' ? operation.value : operation.value[locale]
-      return {field, locale, value, changeTpe: operation.op}
-    })
-  }
-
-  return [{
-    field,
-    locale,
-    value: operation.value,
-    changeTpe: operation.op
-  }]
-}
-
-export type MetadataChange = {
-  changeTpe: Operation['op']
-  locale?: string,
-  field: string,
-  value: string | null
-}
-
-export function createMetadataChange(operation: Operation): MetadataChange[] {
-  const fieldSegments = operation.path.split('/')
-  const field = fieldSegments[2]
-  let value = null
-
-  if (!isValueOperation(operation)) {
-    return [{
-      field,
-      value,
-      changeTpe: operation.op
-    }]
-  }
-
-  if (operation.op === 'add' && Array.isArray(operation.value) && operation.value.length === 0) {
-    return [{
-      field,
-      value: 'initialized',
-      changeTpe: operation.op
-    }]
-  }
-
-  function ensureStringValue(value: any) {
-    if (typeof value === 'string') {
-      return value
-    }
-    if (Array.isArray(value)) {
-      const {success} = z.array(TagOrConceptValidation).safeParse(value)
-      if (success) {
-        return value.map(link => link.sys.id).join(', ')
-      }
-    }
-    if (typeof value === 'object') {
-      return JSON.stringify(value)
-    }
-    return JSON.stringify(value)
-  }
-
-  value = ensureStringValue(operation.value)
-  const {data} = TagOrConceptValidation.safeParse(operation.value)
-
-  if (data) {
-    value = data.sys.id
-  }
-
-  return [{
-    field,
-    value,
-    changeTpe: operation.op
-  }]
-
-}
-
-function isValueOperation(operation: Operation): operation is Operation & { value: string } {
-  return operation.op === 'add' || operation.op === 'replace' || operation.op === 'copy'
 }

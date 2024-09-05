@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {Operation} from "generate-json-patch";
-import {createFieldChange, createMetadataChange} from "~/components/PatchComponent";
+import {createFieldChange, createMetadataChange} from "~/utils/patch-utils";
 
 const locales = ['en-US', 'de-DE']
 
@@ -125,7 +125,13 @@ describe('createMetadataChange', () => {
     })).toStrictEqual([{
       changeTpe: 'add',
       field: 'tags',
-      value: 'someTag'
+      value: {
+        "sys": {
+          "id": "someTag",
+          "type": "Link",
+          "linkType": "Tag"
+        }
+      }
     }])
   })
 })
