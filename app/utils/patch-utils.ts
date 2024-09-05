@@ -22,20 +22,20 @@ export function createFieldChange(operation: Operation, locales: string[] = []):
       field,
       locale,
       value: null,
-      changeTpe: operation.op
+      operation: operation.op
     }]
   }
 
   if (locales.length > 0 && typeof operation.value === 'object') {
     if (fieldSegments.length > 3) {
-      return [{field, locale, value: operation.value, changeTpe: operation.op}]
+      return [{field, locale, value: operation.value, operation: operation.op}]
     }
 
     const patchLocales = fieldSegments.length > 3 ? [locale] : Object.keys(operation.value).filter(locale => locales.includes(locale))
 
     return patchLocales.map(locale => {
       const value = typeof operation.value === 'string' ? operation.value : operation.value[locale]
-      return {field, locale, value, changeTpe: operation.op}
+      return {field, locale, value, operation: operation.op}
     })
   }
 
@@ -43,12 +43,12 @@ export function createFieldChange(operation: Operation, locales: string[] = []):
     field,
     locale,
     value: operation.value,
-    changeTpe: operation.op
+    operation: operation.op
   }]
 }
 
 export type MetadataChange = {
-  changeTpe: Operation['op']
+  operation: Operation['op']
   locale?: string,
   field: string,
   value: any | z.infer<typeof TagOrConceptValidation>[]
@@ -63,7 +63,7 @@ export function createMetadataChange(operation: Operation): MetadataChange[] {
     return [{
       field,
       value,
-      changeTpe: operation.op
+      operation: operation.op
     }]
   }
 
@@ -71,7 +71,7 @@ export function createMetadataChange(operation: Operation): MetadataChange[] {
     return [{
       field,
       value: 'initialized',
-      changeTpe: operation.op
+      operation: operation.op
     }]
   }
 
@@ -94,7 +94,7 @@ export function createMetadataChange(operation: Operation): MetadataChange[] {
   return [{
     field,
     value: operation.value,
-    changeTpe: operation.op
+    operation: operation.op
   }]
 }
 

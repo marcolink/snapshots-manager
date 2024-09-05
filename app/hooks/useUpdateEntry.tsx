@@ -3,11 +3,9 @@ import {printVersion} from "~/utils/change-version";
 import {EntryDataWithUser} from "~/types";
 import {Patch} from "generate-json-patch";
 import {createFieldChange} from "~/utils/patch-utils";
-import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
 import {EditorAppSDK, SidebarAppSDK} from "@contentful/app-sdk";
 
 export const useUpdateEntry = (sdk: EditorAppSDK | SidebarAppSDK | undefined ) => {
-
   return useMutation({
     onSuccess: (entry) => {
       sdk?.notifier.success(`Cherry-pick ${printVersion(entry)} successful`)
@@ -44,7 +42,7 @@ function getFieldUpdates(patch: Patch, sdk: EditorAppSDK | SidebarAppSDK | undef
       continue
     }
 
-    switch (change.changeTpe) {
+    switch (change.operation) {
       case 'add':
         console.log('add', change)
         changePromises.push(fieldAPI.setValue(change.value, change.locale))
@@ -55,6 +53,12 @@ function getFieldUpdates(patch: Patch, sdk: EditorAppSDK | SidebarAppSDK | undef
         break
       case 'remove':
         console.log('remove', change)
+        if(change.locale === 'all') {
+          sdk.locales.available.forEach((locale) => {
+            changePromises.push(fieldAPI.removeValue(locale))
+          })
+          break
+        }
         changePromises.push(fieldAPI.removeValue(change.locale))
         break
       case 'copy':

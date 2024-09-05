@@ -8,7 +8,7 @@ import {List} from "@contentful/f36-list";
 import {ReactNode} from "react";
 import {Tooltip} from "@contentful/f36-tooltip";
 import {documentToReactComponents} from "@contentful/rich-text-react-renderer";
-import {createFieldChange, createMetadataChange} from "~/utils/patch-utils";
+import {createFieldChange, createMetadataChange, MetadataChange} from "~/utils/patch-utils";
 import {z} from "zod";
 
 export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: string[] }) {
@@ -66,19 +66,19 @@ function renderMetaDataLinks(value: any) {
   )
 }
 
-function renderMetadata(patch: FieldChange[]): ReactNode[] {
+function renderMetadata(patch: MetadataChange[]): ReactNode[] {
   const list = []
   for (const change of patch) {
     // console.log(change)
     const field = (
-      <Tooltip placement={'top'} key={JSON.stringify(change)} content={`${change.changeTpe} field ${change.field}`}>
-        <Badge variant={badgeVariant(change.changeTpe)}>
+      <Tooltip placement={'top'} key={JSON.stringify(change)} content={`${change.operation} field ${change.field}`}>
+        <Badge variant={badgeVariant(change.operation)}>
           {change.field}
         </Badge>
       </Tooltip>
     )
 
-    switch (change.changeTpe) {
+    switch (change.operation) {
       case 'add':
       case 'replace':
       case 'move':
@@ -100,14 +100,14 @@ function renderFields(patch: FieldChange[]): ReactNode[] {
   for (const change of patch) {
     // console.log(change)
     const field = (
-      <Tooltip placement={'top'} key={JSON.stringify(change)} content={`${change.changeTpe} field ${change.field}`}>
-        <Badge variant={badgeVariant(change.changeTpe)}>
+      <Tooltip placement={'top'} key={JSON.stringify(change)} content={`${change.operation} field ${change.field}`}>
+        <Badge variant={badgeVariant(change.operation)}>
           {change.field}
         </Badge>
       </Tooltip>
     )
     const locale = change.locale
-    switch (change.changeTpe) {
+    switch (change.operation) {
       case 'add':
       case 'replace':
         list.push(<List.Item
@@ -122,7 +122,7 @@ function renderFields(patch: FieldChange[]): ReactNode[] {
 }
 
 export type FieldChange = {
-  changeTpe: Operation['op']
+  operation: Operation['op']
   locale?: string,
   field: string,
   value: string | null
