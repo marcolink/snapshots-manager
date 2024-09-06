@@ -20,3 +20,4 @@ export const LooseRichTextFieldValidation = z.object({
   content: z.array(z.unknown()),
   nodeType: z.literal('document'),
 }).passthrough()
+

@@ -23,7 +23,7 @@ describe('createFieldChange', () => {
         "en-US": "testValue"
       }
     }, locales)).toStrictEqual([{
-      changeTpe: 'add',
+      operation: 'add',
       field: 'testField',
       locale: 'en-US',
       value: 'testValue'
@@ -38,12 +38,12 @@ describe('createFieldChange', () => {
         "de-DE": "testValueDE"
       }
     }, locales)).toStrictEqual([{
-      changeTpe: 'add',
+      operation: 'add',
       field: 'testField',
       locale: 'en-US',
       value: 'testValueEN'
     }, {
-      changeTpe: 'add',
+      operation: 'add',
       field: 'testField',
       locale: 'de-DE',
       value: 'testValueDE'
@@ -57,7 +57,7 @@ describe('createFieldChange', () => {
         "en-US": "testValue"
       }
     }, locales)).toStrictEqual([{
-      changeTpe: 'add',
+      operation: 'add',
       field: 'testField',
       locale: 'en-US',
       value: 'testValue'
@@ -71,7 +71,7 @@ describe('createFieldChange', () => {
         "en-US": ["one", "two"]
       }
     }, locales)).toStrictEqual([{
-      changeTpe: 'add',
+      operation: 'add',
       field: 'testField',
       locale: 'en-US',
       value: ["one", "two"]
@@ -79,7 +79,7 @@ describe('createFieldChange', () => {
   })
   it('detects the field name', () => {
     expect(createFieldChange(patches.newField, locales)).toStrictEqual([{
-      changeTpe: 'add',
+      operation: 'add',
       field: 'testField',
       locale: 'en-US',
       value: 'testValue'
@@ -91,7 +91,7 @@ describe('createFieldChange', () => {
       path: "/fields/testField/en-US",
       value: 'hello world'
     }, locales)).toStrictEqual([{
-      changeTpe: 'add',
+      operation: 'add',
       field: 'testField',
       locale: 'en-US',
       value: 'hello world'
@@ -106,7 +106,7 @@ describe('createMetadataChange', () => {
       "path": "/metadata/concepts",
       "value": []
     })).toStrictEqual([{
-      changeTpe: 'add',
+      operation: 'add',
       field: 'concepts',
       value: "initialized"
     }])
@@ -123,7 +123,7 @@ describe('createMetadataChange', () => {
         }
       }
     })).toStrictEqual([{
-      changeTpe: 'add',
+      operation: 'add',
       field: 'tags',
       value: {
         "sys": {

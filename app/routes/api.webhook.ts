@@ -1,49 +1,17 @@
 import {ActionFunction, json} from "@remix-run/node";
-import {z} from "zod";
 import {client} from "~/logic";
 import {toRecord} from "~/utils/toRecord";
-import {WebhookActions} from "~/types";
-
-export const ContentfulWebhookHeaders = {
-  Name: 'x-contentful-webhook-name',
-  Topic: 'x-contentful-topic',
-} as const
+import {
+  ContentfulHeadersValidation,
+  ContentfulTopicHeaderValidation,
+  ContentfulWebhookHeaders
+} from "~/validations/webhook-headers";
 
 export class WebhookResponseError extends Error {
   constructor(message: string, public details?: any) {
     super(message);
   }
 }
-
-const ContentfulTopicHeader = z.enum([
-  'ContentManagement.ContentType.create',
-  'ContentManagement.ContentType.save',
-  'ContentManagement.ContentType.publish',
-  'ContentManagement.ContentType.unpublish',
-  'ContentManagement.ContentType.delete',
-  'ContentManagement.Entry.create',
-  'ContentManagement.Entry.save',
-  'ContentManagement.Entry.auto_save',
-  'ContentManagement.Entry.archive',
-  'ContentManagement.Entry.unarchive',
-  'ContentManagement.Entry.publish',
-  'ContentManagement.Entry.unpublish',
-  'ContentManagement.Entry.delete',
-  'ContentManagement.Asset.create',
-  'ContentManagement.Asset.save',
-  'ContentManagement.Asset.auto_save',
-  'ContentManagement.Asset.archive',
-  'ContentManagement.Asset.unarchive',
-  'ContentManagement.Asset.publish',
-  'ContentManagement.Asset.unpublish',
-  'ContentManagement.Asset.delete',
-])
-
-const ContentfulHeaders = z.object({
-  // we need to fix this against to protect against spoofing
-  [ContentfulWebhookHeaders.Name]: z.literal("Event subscription (01azioAkoTPoZwxcxpUFi9)"),
-  [ContentfulWebhookHeaders.Topic]: ContentfulTopicHeader,
-})
 
 export const errorResponse = (error: WebhookResponseError, code = 400) => {
   return json(error, {status: code})
@@ -57,18 +25,36 @@ export const action: ActionFunction = async ({request}) => {
     )
   }
 
+  const {
+    data: parsedHeaders,
+    success: parseHeaderSuccess,
+    error: parseHeaderError,
+  } = ContentfulHeadersValidation.safeParse(toRecord(request.headers))
 
-  const {error, data: headers, success} = ContentfulHeaders.safeParse(toRecord(request.headers))
-
-  if (!success) {
-    return errorResponse(new WebhookResponseError('Invalid headers', error))
+  if (!parseHeaderSuccess) {
+    return errorResponse(new WebhookResponseError('Invalid headers', parseHeaderError))
   }
 
-  if (headers[ContentfulWebhookHeaders.Topic].includes('ContentType')) {
-    return errorResponse(new WebhookResponseError('Content Type webhooks are not supported yet'))
+  const {
+    success: parseHeaderTopicSuccess,
+    data: parsedHeaderTopicData,
+    error: parseHeaderTopicError
+  } = ContentfulTopicHeaderValidation.safeParse(parsedHeaders[ContentfulWebhookHeaders.Topic].split('.'))
+
+  if (!parseHeaderTopicSuccess) {
+    console.log('unexpected topic header', parsedHeaders[ContentfulWebhookHeaders.Topic].split('.'))
+    console.error(parseHeaderTopicError)
+    return json({
+      success: false,
+      message: `Topic "${parsedHeaders[ContentfulWebhookHeaders.Topic]}" not supported (yet).`
+    }, {
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    });
   }
 
-  const [_, subject, operation] = headers[ContentfulWebhookHeaders.Topic].split('.')
+  const [_, subject, operation] = parsedHeaderTopicData
 
   console.log({subject, operation})
 
@@ -105,13 +91,13 @@ export const action: ActionFunction = async ({request}) => {
   // }
   // }
 
-  // validate the subject and operation
-  if (subject === 'Entry') {
+
+  try {
     const entry = await request.json()
     console.log({entry})
     const dnEntry = await client.createEntry({
       raw: entry,
-      operation: operation as WebhookActions,
+      operation: operation,
       space: entry.sys.space.sys.id,
       environment: entry.sys.environment.sys.id,
       byUser: entry.sys.updatedBy.sys.id || entry.sys.createBy.sys.id
@@ -125,14 +111,8 @@ export const action: ActionFunction = async ({request}) => {
         'Content-Type': 'text/plain'
       }
     });
-  } else {
-    return json({
-      success: false,
-      message: `Subject "${subject}" not supported (yet).`
-    }, {
-      headers: {
-        'Content-Type': 'text/plain'
-      }
-    });
+  } catch (e) {
+    console.error(e)
+    return errorResponse(new WebhookResponseError('Error processing entry'))
   }
 }
