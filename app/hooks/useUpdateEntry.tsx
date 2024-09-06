@@ -4,11 +4,13 @@ import {EntryDataWithUser} from "~/types";
 import {Patch} from "generate-json-patch";
 import {createFieldChange} from "~/utils/patch-utils";
 import {EditorAppSDK, SidebarAppSDK} from "@contentful/app-sdk";
+import {ModalConfirm, ModalLauncher} from '@contentful/f36-modal';
+import {Text} from "@contentful/f36-typography";
 
 export const useUpdateEntry = (sdk: EditorAppSDK | SidebarAppSDK | undefined ) => {
   return useMutation({
-    onSuccess: (entry) => {
-      sdk?.notifier.success(`Cherry-pick ${printVersion(entry)} successful`)
+    onSuccess: ({entry, shouldExecute}) => {
+      shouldExecute && sdk?.notifier.success(`Cherry-pick ${printVersion(entry)} successful`)
     },
     onError: (error) => {
       console.warn(error)
@@ -16,9 +18,34 @@ export const useUpdateEntry = (sdk: EditorAppSDK | SidebarAppSDK | undefined ) =
     },
     mutationFn: async (entry: EntryDataWithUser) => {
       const patch = entry.patch as Patch
-      await Promise.all(getFieldUpdates(patch, sdk))
-      await sdk?.entry.save()
-      return entry
+      const shouldExecute = await ModalLauncher.open(({ isShown, onClose }) => {
+        return (
+          <ModalConfirm
+            title="Apply this change on top of the current entry?"
+            intent="positive"
+            isShown={isShown}
+            onCancel={() => {
+              onClose(false);
+            }}
+            onConfirm={() => {
+              onClose(true);
+            }}
+            confirmLabel="Cherry-pick"
+            cancelLabel="Cancel"
+          >
+            <Text>
+              This will apply the <strong>{(entry.patch as Patch).length} change(s)</strong> from the selected snapshot on top of the current entry.
+            </Text>
+          </ModalConfirm>
+        );
+      })
+
+      if(shouldExecute) {
+        await Promise.all(getFieldUpdates(patch, sdk))
+        await sdk?.entry.save()
+      }
+
+      return {entry, shouldExecute}
     }
   })
 }
