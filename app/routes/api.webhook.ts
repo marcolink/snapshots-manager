@@ -40,7 +40,8 @@ const ContentfulTopicHeader = z.enum([
 ])
 
 const ContentfulHeaders = z.object({
-  [ContentfulWebhookHeaders.Name]: z.literal("Snapshot Manager"),
+  // we need to fix this against to protect against spoofing
+  [ContentfulWebhookHeaders.Name]: z.literal("Event subscription (01azioAkoTPoZwxcxpUFi9)"),
   [ContentfulWebhookHeaders.Topic]: ContentfulTopicHeader,
 })
 
@@ -55,6 +56,7 @@ export const action: ActionFunction = async ({request}) => {
       405
     )
   }
+
 
   const {error, data: headers, success} = ContentfulHeaders.safeParse(toRecord(request.headers))
 
@@ -106,6 +108,7 @@ export const action: ActionFunction = async ({request}) => {
   // validate the subject and operation
   if (subject === 'Entry') {
     const entry = await request.json()
+    console.log({entry})
     const dnEntry = await client.createEntry({
       raw: entry,
       operation: operation as WebhookActions,
@@ -116,7 +119,8 @@ export const action: ActionFunction = async ({request}) => {
     return json({
       success: true,
       patch: dnEntry?.[0]?.patch,
-      signature: dnEntry?.[0]?.signature}, {
+      signature: dnEntry?.[0]?.signature
+    }, {
       headers: {
         'Content-Type': 'text/plain'
       }
