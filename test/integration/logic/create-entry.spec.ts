@@ -4,6 +4,7 @@ import {createEntryPayload} from "../../helpers";
 import {deleteEntry} from "~/logic/delete-entry";
 import {EntryProps} from "contentful-management";
 import {WebhookActions} from "~/types";
+import {getEntries} from "~/logic/get-entries";
 
 describe('Create Entry', () => {
   let key = ''
@@ -27,7 +28,7 @@ describe('Create Entry', () => {
     }
   }
 
-  const  createEntryTest = async (props: Parameters<typeof createEntry>[0]) => {
+  const createEntryTest = async (props: Parameters<typeof createEntry>[0]) => {
     const entry = await createEntry(props)
     toBeDeleted.push(...entry.map((e) => e.entry))
     return entry
@@ -88,5 +89,38 @@ describe('Create Entry', () => {
       {op: 'replace', path: '/fields/title/en-US', value: 'world'},
       {op: 'replace', path: '/fields/obj/en-US', value: {key: 'new value'}},
     ]);
+  })
+
+  it('should create a new entry for the first entry with raw payload ', async () => {
+    for (let i = 0; i < 10; i++) {
+      const payload = createEntryPayload({
+        key,
+        fields: {
+          title: {
+            'en-US': `world-${i}`
+          },
+        }
+      })
+      const e = await createEntryTest(getCreateEntryParams(payload));
+
+      if(i === 0) {
+        expect(e[0].raw_entry).toStrictEqual(payload);
+      } else {
+        expect(e[0].raw_entry).toBeNull();
+      }
+    }
+
+    const entries = await getEntries({
+      q: {
+        space: `${key}-space`,
+        environment: `${key}-environment`,
+        entry: `${key}-entry`,
+      }
+    })
+
+    // only the last entry in the list of entries ordered by created_at should have raw_entry
+    for (let i = 0; i < entries.length -1; i++) {
+      expect(entries[i].raw_entry).toBeNull()
+    }
   })
 })

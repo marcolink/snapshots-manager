@@ -1,11 +1,14 @@
 import {EntryProps} from "contentful-management";
 import {db} from "~/database";
 import {entries} from "~/database/schema";
-import {and, desc, eq, inArray} from "drizzle-orm";
 import {WebhookActions} from "~/types";
-import {streamKeyForOperation, Streams} from "~/logic/streams";
+import {streamKeyForOperation} from "~/logic/streams";
 import {createHashedContent} from "~/utils/create-hashed-content";
 import {createEntryPatch} from "~/utils/create-entry-patch";
+import {getReferenceEntry} from "~/logic/get-reference-entry";
+import {getEntriesInPatchableRange} from "./get-entries-in-patchable-range";
+import {applyEntryPatch} from "~/utils/apply-entry-patch";
+import {Patch} from "generate-json-patch";
 
 type Params = {
   space: string,
@@ -16,12 +19,45 @@ type Params = {
 }
 
 export const createEntry = async (data: Params) => {
-  const referenceEntry = (await getReferenceEntry(data)) ?? getDefaultReferenceEntry(data);
 
-  const source = referenceEntry.raw_entry as EntryProps;
+  const existingReferenceEntry = (
+    await getReferenceEntry({
+      space: data.space,
+      environment: data.environment,
+      entry: data.raw.sys.id,
+      stream: streamKeyForOperation(data.operation)
+    })
+  )[0]
+
+  const referenceEntry = existingReferenceEntry ?? getDefaultReferenceEntry(data);
+
+  let source = referenceEntry.raw_entry as EntryProps;
   const target = data.raw;
   // @ts-ignore
   const version = data.raw.sys.revision ?? data.raw.sys.version
+
+  const patchableRangeEntries = await getEntriesInPatchableRange({
+    space: data.space,
+    environment: data.environment,
+    entry: data.raw.sys.id,
+    stream: streamKeyForOperation(data.operation)
+  })
+
+  let referenceRaw = patchableRangeEntries.pop()?.raw_entry as EntryProps
+
+  if (referenceRaw) {
+    console.log('patchable range has raw')
+    console.log(referenceRaw)
+    source = applyEntryPatch({
+      entry: referenceRaw,
+      patches: patchableRangeEntries
+        .reverse()
+        .map((entry) => entry.patch as Patch)
+    })
+  }
+
+  // write a test where we create multiple entries and check if the patchable range is correct
+  // console.log(patchableRangeEntries)
 
   console.log(`reference entry version: ${referenceEntry.version}, current version: ${version}`)
 
@@ -43,11 +79,13 @@ export const createEntry = async (data: Params) => {
 
   console.timeEnd('create patch')
 
+  console.log(`${data.raw.sys.id}`, {existingReferenceEntry: Boolean(existingReferenceEntry)})
+
   return db.insert(entries).values({
     version: version,
     space: data.space,
     environment: data.environment,
-    raw_entry: data.raw,
+    raw_entry: existingReferenceEntry ? null : data.raw,
     entry: data.raw.sys.id,
     operation: data.operation,
     byUser: data.byUser,
@@ -72,26 +110,27 @@ function getDefaultReferenceEntry(data: Params) {
   }
 }
 
-async function getReferenceEntry(data: Params) {
-  if (data.operation === 'create') {
-    return Promise.resolve(getDefaultReferenceEntry(data));
-  }
-
-  const stream = streamKeyForOperation(data.operation);
-
-  const result = await db
-    .select()
-    .from(entries).where(
-      and(
-        eq(entries.space, data.space),
-        eq(entries.environment, data.environment),
-        eq(entries.entry, data.raw.sys.id),
-        inArray(entries.operation, Streams[stream]),
-      )
-    )
-    .orderBy(desc(entries.createdAt))
-    .limit(1).execute()
-
-  return result[0];
-
-}
+//
+// async function getReferenceEntry(data: Params) {
+//   if (data.operation === 'create') {
+//     return Promise.resolve(getDefaultReferenceEntry(data));
+//   }
+//
+//   const stream = streamKeyForOperation(data.operation);
+//
+//   const result = await db
+//     .select()
+//     .from(entries).where(
+//       and(
+//         eq(entries.space, data.space),
+//         eq(entries.environment, data.environment),
+//         eq(entries.entry, data.raw.sys.id),
+//         inArray(entries.operation, Streams[stream]),
+//       )
+//     )
+//     .orderBy(desc(entries.createdAt))
+//     .limit(1).execute()
+//
+//   return result[0];
+//
+// }

@@ -1,0 +1,1 @@
+ALTER TABLE "entry_table" ALTER COLUMN "raw_entry" DROP NOT NULL;
