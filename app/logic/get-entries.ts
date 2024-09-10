@@ -37,7 +37,7 @@ export const getEntries = async ({q, limit = 100}: GetEntriesParams) => {
 
   if (q) {
 
-    console.log('entries query params', q)
+    // console.log('entries query params', q)
 
     query.where(
       and(

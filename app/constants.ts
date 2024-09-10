@@ -1,0 +1,1 @@
+export const PERSIST_RAW_SNAPSHOT_RANGE = 10;

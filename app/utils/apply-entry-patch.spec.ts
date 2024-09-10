@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest"
 import {createEntryPayload} from "../../test/helpers";
-import {applyEntryPatch} from "~/utils/apply-entry-patch";
+import {applyEntryPatches} from "~/utils/apply-entry-patches";
 
 describe('applyEntryPatch', () => {
   it('should apply a patch to an entry', () => {
@@ -10,7 +10,7 @@ describe('applyEntryPatch', () => {
     ]
 
     // @ts-ignore
-    const patchedEntry = applyEntryPatch({entry, patches: [patch]})
+    const patchedEntry = applyEntryPatches({entry, patches: [patch]})
 
     expect(entry.fields.title['en-US']).toBe('hello')
     expect(patchedEntry.fields.title['en-US']).toBe('world')

@@ -13,7 +13,6 @@ type Params = {
 }
 
 export function getEntriesInPatchableRange(data: Params) {
-
   const orderedEntries = db
     .$with('ordered_entries')
     .as(
@@ -22,6 +21,7 @@ export function getEntriesInPatchableRange(data: Params) {
           id: entries.id,
           raw_entry: entries.raw_entry,
           patch: entries.patch,
+          version: entries.version,
           non_null_raw_flag: sql<number>`SUM(CASE WHEN raw_entry IS NOT NULL THEN 1 ELSE 0 END) 
                OVER (PARTITION BY entry ORDER BY created_at DESC)`.mapWith(Number).as('non_null_raw_flag')
         })
@@ -33,7 +33,8 @@ export function getEntriesInPatchableRange(data: Params) {
             eq(entries.entry, data.entry),
             inArray(entries.operation, Streams[data.stream])
           )
-        ).limit(data.maxRange ?? 100)
+        )
+        // .limit(data.maxRange ?? 100)
     )
 
   return db
@@ -44,6 +45,4 @@ export function getEntriesInPatchableRange(data: Params) {
       lte(sql`non_null_raw_flag`, 1)
     )
     .execute();
-
-
 }

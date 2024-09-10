@@ -7,7 +7,7 @@ type Params = {
   patches: Patch[]
 }
 
-export function applyEntryPatch({entry, patches}: Params): EntryProps {
+export function applyEntryPatches({entry, patches}: Params): EntryProps {
   const patchedEntry = structuredClone(entry)
   for (const patch of patches) {
     applyPatch(patchedEntry, patch)
