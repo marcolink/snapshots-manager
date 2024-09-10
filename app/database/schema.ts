@@ -9,11 +9,10 @@ export const entries = pgTable('entry_table', {
   entry: text('entry').notNull(),
   operation: text('operation').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-  raw_entry: jsonb('raw_entry').notNull(),
+  raw_entry: jsonb('raw_entry'),
   patch: jsonb('patch').default([]).notNull(),
   signature: text('signature').notNull(),
 });
-
 
 export type InsertEntry = typeof entries.$inferInsert;
 export type SelectEntry = typeof entries.$inferSelect;

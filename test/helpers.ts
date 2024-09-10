@@ -10,11 +10,11 @@ export function createLink<T extends string>({id, linkType}: Omit<Link<T>['sys']
   }
 }
 
-export function createEntryPayload({key, fields = {}}: { key: string, fields?: EntryProps['fields'] }): EntryProps {
+export function createEntryPayload({key, fields = {}, version = 1}: { version?:number, key: string, fields?: EntryProps['fields'] }): EntryProps {
   return {
     sys: {
       id: `${key}-entry`,
-      version: 1,
+      version,
       space: createLink({id: `${key}-space`, linkType: 'Space'}),
       environment: createLink({id: `${key}-environment`, linkType: 'Environment'}),
       createdBy: createLink({id: `${key}-user`, linkType: 'User'}),
