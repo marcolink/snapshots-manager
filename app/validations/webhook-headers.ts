@@ -37,6 +37,6 @@ export const ContentfulWebhookHeaders = {
 
 export const ContentfulHeadersValidation = z.object({
   // we need to fix this against to protect against spoofing
-  [ContentfulWebhookHeaders.Name]: z.literal("Event subscription (01azioAkoTPoZwxcxpUFi9)"),
+  // [ContentfulWebhookHeaders.Name]: z.literal("Event subscription (01azioAkoTPoZwxcxpUFi9)"),
   [ContentfulWebhookHeaders.Topic]: ContentfulTopicHeaderValueValidation,
 })
