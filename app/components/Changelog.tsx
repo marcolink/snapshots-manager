@@ -9,6 +9,7 @@ import {useCallback, useState} from "react";
 import {ChangelogEntry} from "~/components/ChangelogEntry";
 import {useUpdateEntry} from "~/hooks/useUpdateEntry";
 import {Streams} from "~/logic/streams";
+import {Note} from "@contentful/f36-note";
 
 export function Changelog({entries, isLoadingUsers}: {
   entries: EntryDataWithUser[],
@@ -31,6 +32,10 @@ export function Changelog({entries, isLoadingUsers}: {
   const onCheryPick = useCallback((entry: EntryDataWithUser) => {
     mutate(entry)
   }, [mutate])
+
+  if(entries.length === 0) {
+    return <Note>Time Machine has not yet recorded any changes. Start editing!</Note>
+  }
 
   return (
     <div style={{minWidth: '900px', width: '90%'}}>
