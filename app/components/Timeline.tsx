@@ -6,15 +6,18 @@ export enum Side {
   Center
 }
 
+
 type TimelineProps<T extends { createdAt: string }> = {
   entries: T[]
   itemRenderer: (entry: T) => JSX.Element,
   iconRenderer: (entry: T) => { component: JSX.Element, className: string },
   dateRenderer: (entry: T) => string,
   getKey: (entry: T) => string,
+  isOdd:(entry: T) => boolean
 }
 
 // https://cruip.com/3-examples-of-brilliant-vertical-timelines-with-tailwind-css/#example-1
+
 
 export function Timeline<T extends { createdAt: string }>(
   {
@@ -22,7 +25,8 @@ export function Timeline<T extends { createdAt: string }>(
     iconRenderer,
     dateRenderer,
     getKey,
-    entries
+    entries,
+    isOdd
   }: TimelineProps<T>) {
   return (
     <div className="w-full mx-auto">
@@ -33,14 +37,14 @@ export function Timeline<T extends { createdAt: string }>(
           return (
             <div
               key={getKey(entry)}
-              className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+              className={`relative flex items-center justify-between md:justify-normal ${isOdd(entry) ? 'md:flex-row-reverse' : ''} group is-active`}>
               <div
-                className={`flex items-center justify-center w-10 h-10 rounded-full border border-white bg-white shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 ${icon.className}`}>
+                className={`flex items-center justify-center w-10 h-10 rounded-full border border-white bg-white shadow shrink-0 md:order-1 ${isOdd(entry) ? 'md:-translate-x-1/2' : 'md:translate-x-1/2'} ${icon.className}`}>
                 {icon.component}
               </div>
 
               <div
-                className={`flex items-center justify-center w-1/10 h-10 bg-white shrink-0 md:order-1 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2`}>
+                className={`flex items-center justify-center w-1/10 h-10 bg-white shrink-0 md:order-1 ${isOdd(entry) ? 'md:-translate-x-1/2' : 'md:translate-x-1/2'}`}>
                 <Text fontWeight={'fontWeightMedium'} as={'i'}>{dateRenderer(entry)}</Text>
               </div>
 

@@ -1,5 +1,5 @@
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
-import {EntryDataWithUser} from "~/types";
+import {EntryDataWithUser, WebhookActions} from "~/types";
 import {ArrowDownwardIcon, ArrowUpwardIcon, EditIcon, PlusIcon} from "@contentful/f36-icons";
 import {Timeline} from "~/components/Timeline";
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
@@ -8,6 +8,7 @@ import {EntryDetailsModal} from "~/components/EntryDetailsModal";
 import {useCallback, useState} from "react";
 import {ChangelogEntry} from "~/components/ChangelogEntry";
 import {useUpdateEntry} from "~/hooks/useUpdateEntry";
+import {Streams} from "~/logic/streams";
 
 export function Changelog({entries, isLoadingUsers}: {
   entries: EntryDataWithUser[],
@@ -37,6 +38,7 @@ export function Changelog({entries, isLoadingUsers}: {
       <Timeline
         entries={entries}
         getKey={(entry) => entry.id.toString()}
+        isOdd={(entry) => !Streams.draft.includes(entry.operation as WebhookActions)}
         iconRenderer={(entry) => {
           if (['auto_save', 'save'].includes(entry.operation)) {
             return {component: <EditIcon variant={'primary'}/>, className: 'bg-blue-200'}
