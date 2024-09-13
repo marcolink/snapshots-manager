@@ -3,7 +3,6 @@ import {SectionHeading} from "@contentful/f36-typography";
 import {EntryDataWithUser} from "~/types";
 import {printVersion} from "~/utils/change-version";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
-import {Box} from "@contentful/f36-core";
 
 type Props = {
   entry: EntryDataWithUser

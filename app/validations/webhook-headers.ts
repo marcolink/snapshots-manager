@@ -3,7 +3,7 @@ import {z} from "zod";
 export const ContentfulTopicHeaderValidation = z.tuple([
   z.literal('ContentManagement'),
   z.enum(['Entry']),
-  z.enum(['save', 'auto_save', 'publish'])
+  z.enum(['save', 'auto_save', 'publish', 'unpublish', 'archive', 'unarchive', 'delete']),
 ])
 
 export const ContentfulTopicHeaderValueValidation = z.enum([

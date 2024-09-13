@@ -1,14 +1,15 @@
 import {customType, integer, jsonb, pgTable, serial, text, timestamp} from 'drizzle-orm/pg-core';
 import {WebhookActions} from "~/types";
-import {Patch} from "generate-json-patch";
 
-const customPatch = customType<{ data: Patch, default: true, notNull: true }>({
-  dataType() {
-    return 'jsonb';
-  },
-})
+// type RelevantPatchOperation = AddOperation | ReplaceOperation | RemoveOperation
+//
+// const customPatch = customType<{data: RelevantPatchOperation, default: true, notNull: true}>({
+//   dataType() {
+//     return 'jsonb';
+//   },
+// })
 
-const customOperation = customType<{ data: WebhookActions, notNull: true }>({
+const customOperation = customType<{data: WebhookActions, notNull: true}>({
   dataType() {
     return 'text';
   },
