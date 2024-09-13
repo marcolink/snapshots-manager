@@ -16,8 +16,10 @@ import {printVersion} from "~/utils/change-version";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
 import {IconButton} from "@contentful/f36-button";
 import {CycleIcon} from "@contentful/f36-icons";
+import {Tabs} from "@contentful/f36-tabs";
+import {EnvironmentsEntityList} from "~/components/EnvironmentsEntityList";
 
-const MAX_VIEW_ITEMS = 10
+const MAX_VIEW_ITEMS = 5
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
@@ -60,24 +62,38 @@ export default function Sidebar() {
   return (
     <div>
       <UpdateOnSysChange/>
-      <EntityList>
-        {data.map(entry => {
-          const patchLength = Array.isArray(entry.patch) ? entry.patch.length : 0
-          return <EntityList.Item
-            key={entry.id}
-            thumbnailUrl={entry.user?.avatarUrl}
-            withThumbnail={true}
-            title={formatRelativeDateTime(entry.createdAt)}
-            description={`${printVersion(entry)} | changes: ${patchLength}`}
-            status={OperationMap[entry.operation as WebhookActions]}
-          />
-        })}
-      </EntityList>
-      {metadata.count > MAX_VIEW_ITEMS && (
+      <Tabs defaultTab={'changes'}>
+        <Tabs.List variant="vertical-divider">
+          <Tabs.Tab panelId="changes">Snapshots</Tabs.Tab>
+          <Tabs.Tab panelId="environments">Environments</Tabs.Tab>
+        </Tabs.List>
         <Box paddingTop={'spacingM'}>
-          <Note>{`Showing last 10 of ${metadata.count} snapshots`}</Note>
+          <Tabs.Panel id="changes">
+            <EntityList>
+              {data.map(entry => {
+                const patchLength = Array.isArray(entry.patch) ? entry.patch.length : 0
+                return <EntityList.Item
+                  key={entry.id}
+                  thumbnailUrl={entry.user?.avatarUrl}
+                  withThumbnail={true}
+                  title={formatRelativeDateTime(entry.createdAt)}
+                  description={`${printVersion(entry)} | changes: ${patchLength}`}
+                  status={OperationMap[entry.operation as WebhookActions]}
+                />
+              })}
+            </EntityList>
+            {metadata.count > MAX_VIEW_ITEMS && (
+              <Box paddingTop={'spacingM'}>
+                <Note>{`Showing last ${MAX_VIEW_ITEMS} of ${metadata.count} snapshots`}</Note>
+              </Box>
+            )}
+          </Tabs.Panel>
+          <Tabs.Panel id="environments">
+            <EnvironmentsEntityList/>
+          </Tabs.Panel>
         </Box>
-      )}
+      </Tabs>
+
 
       <Flex paddingTop={'spacingM'} justifyContent={'flex-end'}>
         <Form method="get">
