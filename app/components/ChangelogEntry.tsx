@@ -13,6 +13,8 @@ import {IconButton} from "@contentful/f36-button";
 import {ArrowUpwardIcon, PreviewIcon} from "@contentful/f36-icons";
 import {css} from "emotion";
 import tokens from "@contentful/f36-tokens";
+import {Conditional} from "~/components/Conditional";
+import {Note} from "@contentful/f36-note";
 
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 
@@ -62,6 +64,8 @@ export function ChangelogEntry(
     additionalBadge = <Badge variant={'warning'} className={'mr-1'}>Preview</Badge>
   }
 
+  const hasChange = Boolean((entry.patch as Patch).length)
+
   return (
     <Card
       className={`${bgColorForOperation(entry.operation)}`}
@@ -78,9 +82,13 @@ export function ChangelogEntry(
         <div>{additionalBadge}<OperationBadge operation={entry.operation}/></div>
       </Flex>
 
-      {detailOperations.includes(entry.operation) &&  (
+      <Conditional condition={detailOperations.includes(entry.operation) && hasChange}>
         <PatchComponent patch={entry.patch as Patch} locales={locales}/>
-      )}
+      </Conditional>
+
+      <Conditional condition={!hasChange}>
+        <Note variant={'neutral'}>No changes</Note>
+      </Conditional>
 
       <Flex marginTop={'spacingM'} justifyContent={'flex-end'} gap={'spacingXs'}>
         <Tooltip content={'Show details'} placement={'top'}>
@@ -92,8 +100,9 @@ export function ChangelogEntry(
             icon={<PreviewIcon/>}
           />
         </Tooltip>
-        <Tooltip content={'cherry pick'} placement={'top'}>
+        <Tooltip content={hasChange ? 'cherry pick' : 'no changes'} placement={'top'}>
           <IconButton
+            isDisabled={!hasChange}
             size={'small'}
             variant={'secondary'}
             aria-label={'cherry pick'}
