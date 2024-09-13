@@ -65,7 +65,7 @@ describe('Create Entry', () => {
     expect(entry0[0].patch).toStrictEqual([
       {op: 'add', path: '/fields/title', value: {'en-US': 'hello'}},
       {op: 'add', path: '/fields/obj', value: {'en-US': {key: 'value'}}},
-      {op: 'add', path: '/metadata/tags', value: []}
+      // {op: 'add', path: '/metadata/tags', value: []}
     ]);
 
     const payload1 = createEntryPayload({
@@ -89,4 +89,73 @@ describe('Create Entry', () => {
       {op: 'replace', path: '/fields/obj/en-US', value: {key: 'new value'}},
     ]);
   })
+
+  it('for the first entry appearance, it should create a new "archive" entry with default raw', async () => {
+    const payload1 = createEntryPayload({
+      key,
+      fields: {
+        title: {
+          'en-US': 'hello'
+        },
+        obj: {
+          'en-US': {
+            key: 'value'
+          }
+        }
+      }
+    })
+
+    const entry0 = await createEntryTest(getCreateEntryParams(payload1, 'archive'));
+    expect(entry0[0].patch).toHaveLength(0);
+    expect(entry0[0].patch).toStrictEqual([]);
+    expect(entry0[0].raw_entry).toStrictEqual({
+      fields: {},
+      metadata: {tags: []},
+      sys: {
+        ...payload1.sys,
+      }
+    });
+  })
+
+  it('it should create a new "archive" entry with default raw', async () => {
+    const payload0 = createEntryPayload({
+      key,
+      fields: {
+        title: {
+          'en-US': 'hello'
+        },
+        obj: {
+          'en-US': {
+            key: 'value'
+          }
+        }
+      }
+    })
+
+    const entry0 = await createEntryTest(getCreateEntryParams(payload0));
+    expect(entry0[0].patch).toStrictEqual([
+      {op: 'add', path: '/fields/title', value: {'en-US': 'hello'}},
+      {op: 'add', path: '/fields/obj', value: {'en-US': {key: 'value'}}},
+      // {op: 'add', path: '/metadata/tags', value: []}
+    ]);
+    const payload1 = createEntryPayload({
+      key,
+      fields: {
+        title: {
+          'en-US': 'hello'
+        },
+        obj: {
+          'en-US': {
+            key: 'value'
+          }
+        }
+      }
+    })
+
+    const entry1 = await createEntryTest(getCreateEntryParams(payload1, 'archive'));
+    expect(entry1[0].patch).toHaveLength(0);
+    expect(entry1[0].patch).toStrictEqual([]);
+    expect(entry1[0].raw_entry).toStrictEqual(payload0);
+  })
+
 })
