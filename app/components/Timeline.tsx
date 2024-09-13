@@ -1,12 +1,5 @@
 import {Text} from "@contentful/f36-typography";
 
-export enum Side {
-  Left,
-  Right,
-  Center
-}
-
-
 type TimelineProps<T extends { createdAt: string }> = {
   entries: T[]
   itemRenderer: (entry: T) => JSX.Element,
@@ -17,7 +10,6 @@ type TimelineProps<T extends { createdAt: string }> = {
 }
 
 // https://cruip.com/3-examples-of-brilliant-vertical-timelines-with-tailwind-css/#example-1
-
 
 export function Timeline<T extends { createdAt: string }>(
   {

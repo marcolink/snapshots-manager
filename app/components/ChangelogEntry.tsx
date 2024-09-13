@@ -15,6 +15,7 @@ import {css} from "emotion";
 import tokens from "@contentful/f36-tokens";
 import {Conditional} from "~/components/Conditional";
 import {Note} from "@contentful/f36-note";
+import {NoPatchActions} from "~/logic/streams";
 
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 
@@ -65,6 +66,7 @@ export function ChangelogEntry(
   }
 
   const hasChange = Boolean((entry.patch as Patch).length)
+  const isNoPatchAction = NoPatchActions.includes(entry.operation)
 
   return (
     <Card
@@ -86,31 +88,34 @@ export function ChangelogEntry(
         <PatchComponent patch={entry.patch as Patch} locales={locales}/>
       </Conditional>
 
-      <Conditional condition={!hasChange}>
+      <Conditional condition={!hasChange && !isNoPatchAction}>
         <Note variant={'neutral'}>No changes</Note>
       </Conditional>
 
-      <Flex marginTop={'spacingM'} justifyContent={'flex-end'} gap={'spacingXs'}>
-        <Tooltip content={'Show details'} placement={'top'}>
-          <IconButton
-            size={'small'}
-            variant={'secondary'}
-            aria-label={'show details'}
-            onClick={() => onShowPatch(entry)}
-            icon={<PreviewIcon/>}
-          />
-        </Tooltip>
-        <Tooltip content={hasChange ? 'cherry pick' : 'no changes'} placement={'top'}>
-          <IconButton
-            isDisabled={!hasChange}
-            size={'small'}
-            variant={'secondary'}
-            aria-label={'cherry pick'}
-            onClick={() => onCherryPick(entry)}
-            icon={<ArrowUpwardIcon/>}
-          />
-        </Tooltip>
-      </Flex>
+      <Conditional condition={hasChange && !isNoPatchAction}>
+        <Flex marginTop={'spacingM'} justifyContent={'flex-end'} gap={'spacingXs'}>
+          <Tooltip content={'Show details'} placement={'top'}>
+            <IconButton
+              size={'small'}
+              variant={'secondary'}
+              aria-label={'show details'}
+              onClick={() => onShowPatch(entry)}
+              icon={<PreviewIcon/>}
+            />
+          </Tooltip>
+
+          <Tooltip content={hasChange ? 'cherry pick' : 'no changes'} placement={'top'}>
+            <IconButton
+              isDisabled={!hasChange}
+              size={'small'}
+              variant={'secondary'}
+              aria-label={'cherry pick'}
+              onClick={() => onCherryPick(entry)}
+              icon={<ArrowUpwardIcon/>}
+            />
+          </Tooltip>
+        </Flex>
+      </Conditional>
     </Card>
   )
 }

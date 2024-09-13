@@ -11,6 +11,10 @@ export const Streams: Record<StreamKeyType, WebhookActions[]> = {
   draft: ["create", 'auto_save', 'save', 'delete']
 } as const
 
+export const VersionActions = ['publish', 'unpublish'];
+
+export const NoPatchActions = ['archive', 'unarchive', 'unpublish', 'delete'];
+
 export function streamKeyForOperation(operation: WebhookActions): keyof typeof StreamKeys {
   if(isPublishStream(operation)) {
     return StreamKeys.publish

@@ -10,6 +10,7 @@ import {ChangelogEntry} from "~/components/ChangelogEntry";
 import {useUpdateEntry} from "~/hooks/useUpdateEntry";
 import {Streams} from "~/logic/streams";
 import {Note} from "@contentful/f36-note";
+import {renderOperationIcon} from "~/components/OperationIcon";
 
 export function Changelog({entries, isLoadingUsers}: {
   entries: EntryDataWithUser[],
@@ -44,21 +45,7 @@ export function Changelog({entries, isLoadingUsers}: {
         entries={entries}
         getKey={(entry) => entry.id.toString()}
         isOdd={(entry) => !Streams.draft.includes(entry.operation)}
-        iconRenderer={(entry) => {
-          if (['auto_save', 'save'].includes(entry.operation)) {
-            return {component: <EditIcon variant={'primary'}/>, className: 'bg-blue-200'}
-          }
-          if (entry.operation === 'publish') {
-            return {component: <ArrowUpwardIcon variant={'positive'}/>, className: 'bg-green-200'}
-          }
-          if (entry.operation === 'unpublish') {
-            return {component: <ArrowDownwardIcon variant={'negative'}/>, className: 'bg-gray-200'}
-          }
-          if (entry.operation === 'create') {
-            return {component: <PlusIcon variant={'positive'}/>, className: 'bg-white'}
-          }
-          return {component: <EditIcon variant={'primary'}/>, className: 'bg-gray-200'}
-        }}
+        iconRenderer={(entry) => renderOperationIcon(entry)}
         itemRenderer={(entry) => (
           <ChangelogEntry
             onShowPatch={onShowDetails}

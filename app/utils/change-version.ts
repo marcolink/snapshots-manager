@@ -1,5 +1,6 @@
 import {EntryData} from "~/types";
+import {VersionActions} from "~/logic/streams";
 
 export function printVersion({version, operation}: Pick<EntryData, 'version' | 'operation'>):string {
-  return `${operation === 'publish' ? 'v' : 'r'}${version}`;
+  return `${VersionActions.includes(operation) ? 'v' : 'r'}${version}`;
 }

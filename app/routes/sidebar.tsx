@@ -2,20 +2,20 @@ import {json, LoaderFunctionArgs} from "@remix-run/node";
 import {Form, useLoaderData} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
 import {useContentfulAutoResizer} from "~/hooks/useContentfulAutoResizer";
-import {EntityList} from "@contentful/f36-entity-list";
 import {Note} from "@contentful/f36-note";
-import {WebhookActions} from "~/types";
-import {ComponentProps} from "react";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
-import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {client} from "~/logic";
 import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
 import {promiseHash} from "remix-utils/promise";
-import {Box, Flex} from "@contentful/f36-core";
-import {printVersion} from "~/utils/change-version";
+import {Flex} from "@contentful/f36-core";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
 import {IconButton} from "@contentful/f36-button";
 import {CycleIcon} from "@contentful/f36-icons";
+import {MiniTimeline} from "~/components/MiniTimeline";
+import {renderOperationIcon} from "~/components/OperationIcon";
+import {Text} from "@contentful/f36-typography";
+import {operationsText} from "~/utils/operations-text";
+import {formatRelativeDateTime} from "@contentful/f36-datetime";
 
 const MAX_VIEW_ITEMS = 10
 
@@ -36,17 +36,6 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
   }))
 }
 
-const OperationMap: Record<WebhookActions, ComponentProps<typeof EntityList.Item>['status']> = {
-  create: 'changed',
-  auto_save: 'changed',
-  save: 'changed',
-  publish: 'published',
-  archive: 'archived',
-  delete: 'archived',
-  unarchive: 'changed',
-  unpublish: 'changed'
-}
-
 export default function Sidebar() {
   useContentfulAutoResizer()
 
@@ -60,31 +49,27 @@ export default function Sidebar() {
   return (
     <div>
       <UpdateOnSysChange/>
-      <EntityList>
-        {data.map(entry => {
-          const patchLength = Array.isArray(entry.patch) ? entry.patch.length : 0
-          return <EntityList.Item
-            key={entry.id}
-            thumbnailUrl={entry.user?.avatarUrl}
-            withThumbnail={true}
-            title={formatRelativeDateTime(entry.createdAt)}
-            description={`${printVersion(entry)} | changes: ${patchLength}`}
-            status={OperationMap[entry.operation]}
-          />
-        })}
-      </EntityList>
-      {metadata.count > MAX_VIEW_ITEMS && (
-        <Box paddingTop={'spacingM'}>
-          <Note>{`Showing last 10 of ${metadata.count} snapshots`}</Note>
-        </Box>
-      )}
+      <MiniTimeline
+        entries={data}
+        getKey={(entry) => entry.id.toString()}
+        iconRenderer={(entry) => renderOperationIcon(entry, true)}
+        itemRenderer={entry => (
+          <ul>
+            <li><Text fontSize={'fontSizeS'}>{formatRelativeDateTime(entry.createdAt)}</Text></li>
+            <li>{operationsText(entry)}</li>
+          </ul>
+        )
+        }
+      />
 
-      <Flex paddingTop={'spacingM'} justifyContent={'flex-end'}>
-        <Form method="get">
-          <ExistingSearchParams/>
-          <IconButton size={'small'} icon={<CycleIcon/>} aria-label={'reload'} type={'submit'}>Reload</IconButton>
-        </Form>
-      </Flex>
+      <hr className={'mt-5'}/>
+      <Form method="get">
+        <ExistingSearchParams/>
+        <Flex paddingTop={'spacingXs'} justifyContent={'space-between'} alignItems={'center'}>
+          <Text>{`Showing last 10 of ${metadata.count || 0} snapshots`}</Text>
+          <IconButton size={'small'} icon={<CycleIcon/>} aria-label={'reload'} type={'submit'}>reload</IconButton>
+        </Flex>
+      </Form>
     </div>
   );
 }
