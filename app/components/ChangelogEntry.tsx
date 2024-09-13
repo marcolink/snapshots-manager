@@ -64,7 +64,7 @@ export function ChangelogEntry(
 
   return (
     <Card
-      className={`${bgColorForOperation(entry.operation as WebhookActions)}`}
+      className={`${bgColorForOperation(entry.operation)}`}
       key={`${entry.id} ${entry.operation}`}
     >
       <Flex justifyContent="space-between">
@@ -77,8 +77,10 @@ export function ChangelogEntry(
         </Flex>
         <div>{additionalBadge}<OperationBadge operation={entry.operation}/></div>
       </Flex>
-      {detailOperations.includes(entry.operation as WebhookActions) &&
-          <PatchComponent patch={entry.patch as Patch} locales={locales}/>}
+
+      {detailOperations.includes(entry.operation) &&  (
+        <PatchComponent patch={entry.patch as Patch} locales={locales}/>
+      )}
 
       <Flex marginTop={'spacingM'} justifyContent={'flex-end'} gap={'spacingXs'}>
         <Tooltip content={'Show details'} placement={'top'}>

@@ -69,7 +69,7 @@ export default function Sidebar() {
             withThumbnail={true}
             title={formatRelativeDateTime(entry.createdAt)}
             description={`${printVersion(entry)} | changes: ${patchLength}`}
-            status={OperationMap[entry.operation as WebhookActions]}
+            status={OperationMap[entry.operation]}
           />
         })}
       </EntityList>

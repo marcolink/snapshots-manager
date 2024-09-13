@@ -43,7 +43,7 @@ export function Changelog({entries, isLoadingUsers}: {
       <Timeline
         entries={entries}
         getKey={(entry) => entry.id.toString()}
-        isOdd={(entry) => !Streams.draft.includes(entry.operation as WebhookActions)}
+        isOdd={(entry) => !Streams.draft.includes(entry.operation)}
         iconRenderer={(entry) => {
           if (['auto_save', 'save'].includes(entry.operation)) {
             return {component: <EditIcon variant={'primary'}/>, className: 'bg-blue-200'}
