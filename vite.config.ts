@@ -17,4 +17,8 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  test: {
+    environment: 'jsdom',
+    setupFiles: ["./test/vitest.setup.ts"],
+  }
 });
