@@ -1,6 +1,5 @@
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {EntryDataWithUser} from "~/types";
-import {ArrowDownwardIcon, ArrowUpwardIcon, EditIcon, PlusIcon} from "@contentful/f36-icons";
 import {Timeline} from "~/components/Timeline";
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
 import {EditorAppSDK} from "@contentful/app-sdk";

@@ -7,7 +7,6 @@ export function isValueOperation(operation: Operation): operation is Operation &
   return operation.op === 'add' || operation.op === 'replace' || operation.op === 'copy'
 }
 
-
 export function createFieldChange(operation: Operation, locales: string[] = []): FieldChange[] {
   const fieldSegments = operation.path.split('/')
   const field = fieldSegments[2]

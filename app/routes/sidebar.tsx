@@ -16,6 +16,7 @@ import {renderOperationIcon} from "~/components/OperationIcon";
 import {Text} from "@contentful/f36-typography";
 import {operationsText} from "~/utils/operations-text";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
+import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
 
 const MAX_VIEW_ITEMS = 10
 
@@ -46,6 +47,8 @@ export default function Sidebar() {
     return <Note title={'No snapshots found'}/>
   }
 
+  const {sdk} = useInBrowserSdk()
+
   return (
     <div>
       <UpdateOnSysChange/>
@@ -56,7 +59,7 @@ export default function Sidebar() {
         itemRenderer={entry => (
           <ul>
             <li><Text fontSize={'fontSizeS'}>{formatRelativeDateTime(entry.createdAt)}</Text></li>
-            <li>{operationsText(entry)}</li>
+            <li>{operationsText(entry, sdk?.locales.available || [])}</li>
           </ul>
         )
         }
@@ -66,7 +69,7 @@ export default function Sidebar() {
       <Form method="get">
         <ExistingSearchParams/>
         <Flex paddingTop={'spacingXs'} justifyContent={'space-between'} alignItems={'center'}>
-          <Text>{`Showing last 10 of ${metadata.count || 0} snapshots`}</Text>
+          <Text>{`Showing last ${MAX_VIEW_ITEMS} of ${metadata.count || 0} snapshots`}</Text>
           <IconButton size={'small'} icon={<CycleIcon/>} aria-label={'reload'} type={'submit'}>reload</IconButton>
         </Flex>
       </Form>

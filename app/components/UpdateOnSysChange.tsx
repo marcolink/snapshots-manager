@@ -4,6 +4,8 @@ import {useCallback, useEffect, useRef, useState} from "react";
 import {Form, useSubmit} from "@remix-run/react";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
 
+const TIMEOUT = 1200
+
 export function UpdateOnSysChange() {
   const {sdk} = useInBrowserSdk<SidebarAppSDK>()
   const [lastUpdatedAt, setLastUpdatedAt] = useState<string | null>(null)
@@ -15,8 +17,9 @@ export function UpdateOnSysChange() {
       setTimeout(() => {
         setLastUpdatedAt(event.updatedAt)
         submit(updateFormRef.current)
-      }, 1200)
+      }, TIMEOUT)
     }
+    // should updateFormRef.current be bart of the deps array?
   }, [submit])
 
   useEffect(() => {

@@ -3,8 +3,6 @@ import {Text} from "@contentful/f36-typography";
 import {Patch} from "generate-json-patch";
 import {numberToWords} from "~/utils/number-to-words";
 import {createMetadataChange} from "~/utils/patch-utils";
-import {Simulate} from "react-dom/test-utils";
-import change = Simulate.change;
 
 const pluralize = (word: string, count: number) => count === 1 ? word : `${word}s`
 
@@ -40,7 +38,7 @@ export function operationsText(entry: EntryDataWithUser, locales: string[] = [])
     case 'auto_save':
       return <Text>{name} changed {changeString}</Text>
     case 'publish':
-      return <Text>{name} published {changes.length ? `${changeString} changes` : 'without changes'}</Text>
+      return <Text>{name} published {changes.length ? `${changeString} ${pluralize('change', fieldChanges.length + metadataPatch.length)}` : 'without changes'}</Text>
     case 'archive':
       return <Text>{name} archived the entry</Text>
     case 'delete':
