@@ -129,14 +129,23 @@ export type FieldChange = {
 }
 
 function printValue(value: any) {
+  if (Array.isArray(value)) {
+
+    if(value.filter(v => isContentfulEntryLink(v) || isContentfulAssetLink(v)).length > 0) {
+      return value.map(v => {
+        const icon = v.sys.linkType === 'Entry' ? <EntryIcon/> : <AssetIcon/>
+        return <i key={v.sys.id}>{icon} {v.sys.id}</i>
+      })
+    }
+
+    return <>{value.map(value => `"${value}"`).join(', ')}</>
+  }
+
   if (isContentfulEntryLink(value)) {
     return <i><EntryIcon/> {value.sys.id}</i>
   }
   if (isContentfulAssetLink(value)) {
     return <i><AssetIcon/> {value.sys.id}</i>
-  }
-  if (Array.isArray(value)) {
-    return <>{value.map(value => `"${value}"`).join(', ')}</>
   }
 
   const {success: isRichText} = LooseRichTextFieldValidation.safeParse(value)
