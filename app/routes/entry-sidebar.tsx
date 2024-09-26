@@ -37,7 +37,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
   }))
 }
 
-export default function Sidebar() {
+export default function EntrySidebar() {
   useContentfulAutoResizer()
 
   const {data: entries, metadata} = useLoaderData<typeof loader>()

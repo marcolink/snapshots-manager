@@ -1,36 +1,40 @@
-import {useInBrowser} from "~/hooks/useInBrowser";
-import {useNavigate} from "react-router";
-import * as AppSDK from "@contentful/app-sdk";
-import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
-import {toRecord} from "~/utils/toRecord";
+import {useInBrowser} from '~/hooks/useInBrowser';
+import {useLocation, useNavigate} from 'react-router';
+import {useInBrowserSdk} from '~/hooks/useInBrowserSdk';
+import * as AppSDK from '@contentful/app-sdk';
 
 export const useAppSdkRouter = () => {
   const navigate = useNavigate();
-  const {sdk} = useInBrowserSdk()
+  const location = useLocation();
+  const {sdk} = useInBrowserSdk();
 
   useInBrowser(() => {
-    // If the SDK is not available, we can't navigate
     if (!sdk) {
-      return
+      return;
     }
 
-    let path = ''
+    const Locations = [
+      AppSDK.locations.LOCATION_APP_CONFIG,
+      AppSDK.locations.LOCATION_ENTRY_FIELD,
+      AppSDK.locations.LOCATION_ENTRY_EDITOR,
+      AppSDK.locations.LOCATION_DIALOG,
+      AppSDK.locations.LOCATION_ENTRY_SIDEBAR,
+      AppSDK.locations.LOCATION_PAGE,
+      AppSDK.locations.LOCATION_HOME,
+    ] as const;
 
-    if (sdk?.location.is(AppSDK.locations.LOCATION_PAGE)) {
-      path = '/page'
-    } else if (sdk?.location.is(AppSDK.locations.LOCATION_ENTRY_SIDEBAR)) {
-      path = '/sidebar'
-    } else if (sdk?.location.is(AppSDK.locations.LOCATION_ENTRY_EDITOR)) {
-      path = '/entry-editor'
-    } else {
-      console.warn('Unknown location', sdk?.location)
-      return
+    const requestedLocation = Locations.find((key) => sdk?.location.is(key));
+
+    if (!requestedLocation) {
+      console.error(`Unknown app location`);
+      return;
     }
 
-    const params = new URLSearchParams(sdk?.ids)
-    console.log("Navigate path", path)
-    console.log("Navigate params", toRecord(params))
-    path += `?${params.toString()}`
-    return navigate(path)
-  }, [sdk])
-}
+    if (location.pathname === `/${requestedLocation}`) {
+      return;
+    }
+
+    const params = new URLSearchParams(sdk?.ids);
+    return navigate(`/${requestedLocation}?${params.toString()}`);
+  }, [sdk]);
+};
