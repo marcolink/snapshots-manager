@@ -23,7 +23,7 @@
     "@contentful/f36-progress-stepper": "^4.0.0-alpha.0",
     "@contentful/rich-text-react-renderer": "^15.22.10",
     "@remix-run/node": "^2.11.2",
-    "@remix-run/react": "^2.11.2",
+    "@remix-run/react": "^2.13.1",
     "@remix-run/serve": "^2.11.2",
     "@tanstack/react-query": "^5.52.2",
     "@tanstack/react-table": "^8.20.5",
