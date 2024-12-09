@@ -24,7 +24,7 @@
     "@contentful/rich-text-react-renderer": "^15.22.10",
     "@remix-run/node": "^2.11.2",
     "@remix-run/react": "^2.11.2",
-    "@remix-run/serve": "^2.11.2",
+    "@remix-run/serve": "^2.15.1",
     "@tanstack/react-query": "^5.52.2",
     "@tanstack/react-table": "^8.20.5",
     "@vercel/postgres": "^0.9.0",
