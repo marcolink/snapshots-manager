@@ -42,12 +42,12 @@ export default function EntrySidebar() {
 
   const {data: entries, metadata} = useLoaderData<typeof loader>()
   const {data} = useWithContentfulUsers(entries)
+  const {sdk} = useInBrowserSdk()
 
   if (data.length === 0) {
     return <Note title={'No snapshots found'}/>
   }
 
-  const {sdk} = useInBrowserSdk()
 
   return (
     <div>

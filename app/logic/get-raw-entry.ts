@@ -1,5 +1,5 @@
 import {db} from "~/database";
-import {and, desc, eq} from "drizzle-orm";
+import {and, eq} from "drizzle-orm";
 import {rawEntries} from "~/database/schema";
 import {WebhookActions} from "~/types";
 import {streamKeyForOperation} from "~/logic/streams";

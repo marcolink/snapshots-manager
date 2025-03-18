@@ -10,7 +10,6 @@ type GetEntriesParams = {
     environment?: string,
     entry?: string,
     stream?: StreamsType,
-    signature?: string,
   }
 }
 
@@ -27,7 +26,6 @@ export const getEntriesCount = async ({q}: GetEntriesParams) => {
         q.environment ? eq(entries.environment, q.environment) : undefined,
         q.entry ? eq(entries.entry, q.entry) : undefined,
         q.stream ? inArray(entries.operation, Streams[q.stream]) : undefined,
-        q.signature ? eq(entries.signature, q.signature) : undefined,
       )
     )
   }

@@ -1,4 +1,4 @@
-import {ActionFunction, json} from "@remix-run/node";
+import {ActionFunction} from "@remix-run/node";
 import {client} from "~/logic";
 import {toRecord} from "~/utils/toRecord";
 import {
@@ -8,13 +8,13 @@ import {
 } from "~/validations/webhook-headers";
 
 export class WebhookResponseError extends Error {
-  constructor(message: string, public details?: any) {
+  constructor(message: string, public details?: unknown) {
     super(message);
   }
 }
 
 export const errorResponse = (error: WebhookResponseError, code = 400) => {
-  return json(error, {status: code})
+  return Response.json(error, {status: code})
 }
 
 export const action: ActionFunction = async ({request}) => {
@@ -44,7 +44,7 @@ export const action: ActionFunction = async ({request}) => {
   if (!parseHeaderTopicSuccess) {
     console.log('unexpected topic header', parsedHeaders[ContentfulWebhookHeaders.Topic].split('.'))
     console.error(parseHeaderTopicError)
-    return json({
+    return Response.json({
       success: false,
       message: `Topic "${parsedHeaders[ContentfulWebhookHeaders.Topic]}" not supported (yet).`
     }, {
@@ -54,9 +54,8 @@ export const action: ActionFunction = async ({request}) => {
     });
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [_, subject, operation] = parsedHeaderTopicData
-
-  console.log({subject, operation})
 
   try {
     const entry = await request.json()
@@ -72,14 +71,9 @@ export const action: ActionFunction = async ({request}) => {
         || entry.sys.archivedBy?.sys.id
         || 'unknown'
     })
-    return json({
+    return Response.json({
       success: true,
-      patch: dnEntry?.[0]?.patch,
-      signature: dnEntry?.[0]?.signature
-    }, {
-      headers: {
-        'Content-Type': 'text/plain'
-      }
+      patch: dnEntry?.[0]?.patch || [],
     });
   } catch (e) {
     console.error(e)
