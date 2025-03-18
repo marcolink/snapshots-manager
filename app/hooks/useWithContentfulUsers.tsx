@@ -1,6 +1,9 @@
 import {useContentfulUsers} from "~/hooks/useContentfulUsers";
 import {UserProps} from "contentful-management";
 
+/**
+ * @desc: Since some idiot decided to build this with remix, we need to enrich some data on the client side using the app sdk
+ */
 export function useWithContentfulUsers <T extends {byUser: string}>(data: T[]) {
   const {
     data: users,

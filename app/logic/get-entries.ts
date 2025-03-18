@@ -33,8 +33,6 @@ export const getEntries = async ({q, limit = 100}: GetEntriesParams) => {
 
   if (q) {
 
-    console.log('entries query params', q)
-
     query.where(
       and(
         q.space ? eq(entries.space, q.space) : undefined,

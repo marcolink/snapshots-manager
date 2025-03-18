@@ -1,4 +1,4 @@
-import {json, LoaderFunctionArgs} from "@remix-run/node";
+import {LoaderFunctionArgs} from "@remix-run/node";
 import {Form, useLoaderData} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
 import {useContentfulAutoResizer} from "~/hooks/useContentfulAutoResizer";
@@ -17,13 +17,14 @@ import {Text} from "@contentful/f36-typography";
 import {operationsText} from "~/utils/operations-text";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
+import {EntryData} from "~/types";
 
 const MAX_VIEW_ITEMS = 50
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
 
-  return json(await promiseHash({
+  return Response.json(await promiseHash({
     data: client.getEntries({
       q: {
         ...q, environment: q.environmentAlias || q.environment
@@ -41,13 +42,12 @@ export default function EntrySidebar() {
   useContentfulAutoResizer()
 
   const {data: entries, metadata} = useLoaderData<typeof loader>()
-  const {data} = useWithContentfulUsers(entries)
+  const {data} = useWithContentfulUsers<EntryData>(entries)
   const {sdk} = useInBrowserSdk()
 
   if (data.length === 0) {
     return <Note title={'No snapshots found'}/>
   }
-
 
   return (
     <div>

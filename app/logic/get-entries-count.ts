@@ -19,7 +19,6 @@ export const getEntriesCount = async ({q}: GetEntriesParams) => {
     .from(entries)
 
   if (q) {
-    console.log('entries count query params', q)
     query.where(
       and(
         q.space ? eq(entries.space, q.space) : undefined,
