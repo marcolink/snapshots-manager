@@ -20,5 +20,6 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     setupFiles: ["./test/vitest.setup.ts"],
+    reporters: process.env.GITHUB_ACTIONS ? ['dot', 'github-actions'] : ['dot'],
   }
 });
