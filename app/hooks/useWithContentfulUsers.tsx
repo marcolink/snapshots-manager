@@ -1,4 +1,5 @@
 import {useContentfulUsers} from "~/hooks/useContentfulUsers";
+import {UserProps} from "contentful-management";
 
 export function useWithContentfulUsers <T extends {byUser: string}>(data: T[]) {
   const {
@@ -12,7 +13,7 @@ export function useWithContentfulUsers <T extends {byUser: string}>(data: T[]) {
       return {
         ...entry,
         user
-      }
+      } as T & {user: UserProps}
     })
 
   return {

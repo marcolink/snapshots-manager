@@ -22,9 +22,7 @@ export const entries = pgTable('entry_table', {
   entry: text('entry').notNull(),
   operation: operation('operation').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-  raw_entry: jsonb('raw_entry'),
   patch: jsonb('patch').default([]).notNull(),
-  signature: text('signature').notNull(),
 }, (table) => ({
   spaceEnvEntryIdx: index().on(table.space, table.environment, table.entry),
 }));

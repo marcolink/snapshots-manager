@@ -1,4 +1,4 @@
-import {json, LoaderFunctionArgs} from "@remix-run/node";
+import {LoaderFunctionArgs} from "@remix-run/node";
 import {Form, useLoaderData, useSubmit} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
@@ -8,9 +8,9 @@ import {client} from "~/logic";
 import {StreamKeyDec, StreamKeys} from "~/logic/streams";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
 import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
+import {EntryData} from "~/types";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-  // await db.delete(entries);
   const q = toRecord(new URL(request.url).searchParams)
   const stream = StreamKeyDec.catch(StreamKeys.publish).parse(q.stream)
 
@@ -21,14 +21,14 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
       // stream: stream,
     }, limit: 100
   })
-  return json({data, stream})
+  return Response.json({data, stream})
 }
 
 export default function Page() {
-  const {data: entries, stream} = useLoaderData<typeof loader>()
+  const {data: entries} = useLoaderData<typeof loader>()
   const {
     data, isUsersLoading,
-  } = useWithContentfulUsers(entries)
+  } = useWithContentfulUsers<EntryData>(entries)
 
   const submit = useSubmit()
 
@@ -41,9 +41,6 @@ export default function Page() {
         <Box padding={'spacingL'}>
           <Flex justifyContent={'center'} flexDirection={'column'} alignItems="center">
             <ExistingSearchParams exclude={['stream']}/>
-            {/*<Form method="post">*/}
-            {/* <StreamSelect selected={selected}/>*/}
-            {/*</Form>*/}
             <Changelog entries={data} isLoadingUsers={isUsersLoading}/>
           </Flex>
         </Box>

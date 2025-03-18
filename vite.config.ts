@@ -15,11 +15,14 @@ export default defineConfig({
         v3_throwAbortReason: true,
       },
     }),
-    tsconfigPaths(),
+    tsconfigPaths()
   ],
+  server: {
+    allowedHosts: true
+  },
   test: {
     environment: 'jsdom',
     setupFiles: ["./test/vitest.setup.ts"],
-    reporters: process.env.GITHUB_ACTIONS ? ['dot', 'github-actions'] : ['dot'],
+    reporters: process.env.GITHUB_ACTIONS ? ['default', 'github-actions'] : ['default'],
   }
 });

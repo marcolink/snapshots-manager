@@ -132,7 +132,6 @@ function testEntry(operation: WebhookActions, patch: Patch): EntryDataWithUser {
     createdAt: "2021-09-01T12:00:00Z",
     environment: "master",
     space: "space",
-    signature: "signature",
     byUser: 'marco',
   }
 }
