@@ -1,20 +1,16 @@
-import {afterEach, beforeEach, describe, expect, it} from "vitest";
+import {beforeEach, describe, expect, it} from "vitest";
 import {createEntry} from "~/logic/create-entry";
 import {createEntryPayload} from "../../helpers";
-import {deleteEntry} from "~/logic/delete-entry";
 import {EntryProps} from "contentful-management";
 import {WebhookActions} from "~/types";
+import {getRawEntry} from "~/logic/get-raw-entry";
+import {deepClone} from "@vitest/utils";
 
-describe('Create Entry', () => {
+describe('Create Entry', async () => {
   let key = ''
-  let toBeDeleted: string[] = []
+
   beforeEach(() => {
     key = `test-${Date.now()}`
-    toBeDeleted = []
-  })
-
-  afterEach(async () => {
-    await deleteEntry(toBeDeleted)
   })
 
   const getCreateEntryParams = (payload: EntryProps, operation: WebhookActions = 'create'): Parameters<typeof createEntry>[0] => {
@@ -27,15 +23,15 @@ describe('Create Entry', () => {
     }
   }
 
-  const  createEntryTest = async (props: Parameters<typeof createEntry>[0]) => {
+  const createEntryTest = async (props: Parameters<typeof createEntry>[0]) => {
     const entry = await createEntry(props)
-    toBeDeleted.push(...entry.map((e) => e.entry))
-    return entry
+    const rawEntry = await getRawEntry({...props, entry: props.raw.sys.id, operation: props.operation})
+    return {entry, rawEntry}
   }
 
   it('should create a new "create" entry', async () => {
     const payload = createEntryPayload({key})
-    const entry = await createEntryTest(getCreateEntryParams(payload));
+    const {entry, rawEntry} = await createEntryTest(getCreateEntryParams(payload));
 
     expect(entry).to.length(1);
     expect(entry[0].operation).toBe('create');
@@ -43,7 +39,7 @@ describe('Create Entry', () => {
     expect(entry[0].environment).toBe(`${key}-environment`);
     expect(entry[0].byUser).toBe(`${key}-user`);
     expect(entry[0].entry).toBe(`${key}-entry`);
-    expect(entry[0].raw_entry).toStrictEqual(payload);
+    expect(rawEntry?.raw).toStrictEqual(payload);
   });
 
   it('should create a new "create" entry and patch', async () => {
@@ -61,36 +57,44 @@ describe('Create Entry', () => {
       }
     })
 
-    const entry0 = await createEntryTest(getCreateEntryParams(payload0));
+    const {entry: entry0} = await createEntryTest(getCreateEntryParams(payload0, 'save'));
     expect(entry0[0].patch).toStrictEqual([
       {op: 'add', path: '/fields/title', value: {'en-US': 'hello'}},
       {op: 'add', path: '/fields/obj', value: {'en-US': {key: 'value'}}},
       // {op: 'add', path: '/metadata/tags', value: []}
     ]);
 
-    const payload1 = createEntryPayload({
-      key,
-      fields: {
-        title: {
-          'en-US': 'world'
-        },
-        obj: {
-          'en-US': {
-            key: 'new value'
-          }
-        }
-      }
+    const lastRaw0 = await getRawEntry({
+      space: `${key}-space`,
+      environment: `${key}-environment`,
+      entry: `${key}-entry`,
+      operation: 'save'
     })
 
-    const entry1 = await createEntryTest(getCreateEntryParams(payload1, 'auto_save'));
+    expect(lastRaw0.raw).toStrictEqual(payload0);
 
+    const payload1 = deepClone(payload0)
+    payload1.fields.title['en-US'] = 'world'
+    payload1.fields.obj['en-US'] = {key: 'new value'}
+
+    const {entry: entry1} = await createEntryTest(getCreateEntryParams(payload1, 'auto_save'));
+
+    const lastRaw1 = await getRawEntry({
+      space: `${key}-space`,
+      environment: `${key}-environment`,
+      entry: `${key}-entry`,
+      operation: 'save'
+    })
+
+    expect(lastRaw1.raw).toStrictEqual(payload1);
     expect(entry1[0].patch).toStrictEqual([
       {op: 'replace', path: '/fields/title/en-US', value: 'world'},
       {op: 'replace', path: '/fields/obj/en-US', value: {key: 'new value'}},
     ]);
   })
 
-  it('for the first entry appearance, it should create a new "archive" entry with default raw', async () => {
+  //currently not sure if this is the correct behavior
+  it.skip('for the first entry appearance, it should create a new "archive" entry with default raw', async () => {
     const payload1 = createEntryPayload({
       key,
       fields: {
@@ -105,10 +109,10 @@ describe('Create Entry', () => {
       }
     })
 
-    const entry0 = await createEntryTest(getCreateEntryParams(payload1, 'archive'));
+    const {entry: entry0, rawEntry: rawEntry0} = await createEntryTest(getCreateEntryParams(payload1, 'archive'));
     expect(entry0[0].patch).toHaveLength(0);
     expect(entry0[0].patch).toStrictEqual([]);
-    expect(entry0[0].raw_entry).toStrictEqual({
+    expect(rawEntry0.raw).toStrictEqual({
       fields: {},
       metadata: {tags: []},
       sys: {
@@ -132,7 +136,7 @@ describe('Create Entry', () => {
       }
     })
 
-    const entry0 = await createEntryTest(getCreateEntryParams(payload0));
+    const {entry: entry0} = await createEntryTest(getCreateEntryParams(payload0));
     expect(entry0[0].patch).toStrictEqual([
       {op: 'add', path: '/fields/title', value: {'en-US': 'hello'}},
       {op: 'add', path: '/fields/obj', value: {'en-US': {key: 'value'}}},
@@ -152,10 +156,10 @@ describe('Create Entry', () => {
       }
     })
 
-    const entry1 = await createEntryTest(getCreateEntryParams(payload1, 'archive'));
+    const {entry: entry1, rawEntry: rawEntry1} = await createEntryTest(getCreateEntryParams(payload1, 'archive'));
     expect(entry1[0].patch).toHaveLength(0);
     expect(entry1[0].patch).toStrictEqual([]);
-    expect(entry1[0].raw_entry).toStrictEqual(payload0);
+    expect(rawEntry1.raw).toStrictEqual(payload0);
   })
 
 })

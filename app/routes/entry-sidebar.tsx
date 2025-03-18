@@ -18,7 +18,7 @@ import {operationsText} from "~/utils/operations-text";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
 
-const MAX_VIEW_ITEMS = 10
+const MAX_VIEW_ITEMS = 50
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
@@ -65,11 +65,11 @@ export default function EntrySidebar() {
         }
       />
 
-      <hr className={'mt-5'}/>
+      {/*<hr className={'mt-5'}/>*/}
       <Form method="get">
         <ExistingSearchParams/>
         <Flex paddingTop={'spacingXs'} justifyContent={'space-between'} alignItems={'center'}>
-          <Text>{`Showing last ${MAX_VIEW_ITEMS} of ${metadata.count || 0} snapshots`}</Text>
+          <Text>{`Showing last ${Math.min(MAX_VIEW_ITEMS, metadata.count || 0)} of ${metadata.count || 0} snapshots`}</Text>
           <IconButton size={'small'} icon={<CycleIcon/>} aria-label={'reload'} type={'submit'}>reload</IconButton>
         </Flex>
       </Form>

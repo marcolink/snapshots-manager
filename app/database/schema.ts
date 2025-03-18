@@ -1,15 +1,13 @@
-import {customType, integer, jsonb, pgTable, serial, text, timestamp} from 'drizzle-orm/pg-core';
+import {customType, index, integer, jsonb, pgTable, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
 import {WebhookActions} from "~/types";
 
-// type RelevantPatchOperation = AddOperation | ReplaceOperation | RemoveOperation
-//
-// const customPatch = customType<{data: RelevantPatchOperation, default: true, notNull: true}>({
-//   dataType() {
-//     return 'jsonb';
-//   },
-// })
+const operation = customType<{data: WebhookActions, notNull: true}>({
+  dataType() {
+    return 'text';
+  },
+})
 
-const customOperation = customType<{data: WebhookActions, notNull: true}>({
+const stream = customType<{data: 'publish' | 'draft', notNull: true}>({
   dataType() {
     return 'text';
   },
@@ -22,13 +20,27 @@ export const entries = pgTable('entry_table', {
   space: text('space').notNull(),
   environment: text('environment').notNull(),
   entry: text('entry').notNull(),
-  operation: customOperation('operation').notNull(),
+  operation: operation('operation').notNull(),
   createdAt: timestamp('created_at').notNull().defaultNow(),
-  raw_entry: jsonb('raw_entry').notNull(),
+  raw_entry: jsonb('raw_entry'),
   patch: jsonb('patch').default([]).notNull(),
   signature: text('signature').notNull(),
-});
+}, (table) => ({
+  spaceEnvEntryIdx: index().on(table.space, table.environment, table.entry),
+}));
 
+export const rawEntries = pgTable('raw_entry_table', {
+  id: serial('id').primaryKey(),
+  version: integer('version').notNull(),
+  space: text('space').notNull(),
+  environment: text('environment').notNull(),
+  entry: text('entry').notNull(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  raw: jsonb('raw').notNull(),
+  stream: stream('stream').notNull(),
+}, (table) => ({
+  uniqueSpaceEnvEntryStream: unique().on(table.space, table.environment, table.entry, table.stream),
+}));
 
-export type InsertEntry = typeof entries.$inferInsert;
 export type SelectEntry = typeof entries.$inferSelect;
+export type SelectRawEntry = typeof rawEntries.$inferSelect;

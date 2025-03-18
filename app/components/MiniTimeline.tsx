@@ -1,3 +1,5 @@
+import {useEffect, useRef} from "react";
+
 type TimelineProps<T extends { createdAt: string }> = {
   entries: T[]
   itemRenderer: (entry: T) => JSX.Element,
@@ -12,8 +14,19 @@ export function MiniTimeline<T extends { createdAt: string }>(
     getKey,
     entries,
   }: TimelineProps<T>) {
+
+  const scrollableRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollableRef.current) {
+      scrollableRef.current.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [entries]);
+
   return (
-    <div className="w-full mx-auto">
+    <div ref={scrollableRef} className="w-full mx-auto overflow-y-auto scroll-smooth max-h-80">
+      <div className="pointer-events-none sticky top-0 h-4 bg-gradient-to-b from-white to-transparent z-10"></div>
+
       <div
         className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-slate-50 before:via-slate-300 before:to-slate-50">
         {entries.map((entry, index) => {
@@ -34,6 +47,8 @@ export function MiniTimeline<T extends { createdAt: string }>(
           )
         })}
       </div>
+      <div className="pointer-events-none sticky bottom-0 h-4 bg-gradient-to-t from-white to-transparent z-10"></div>
+
     </div>
   );
 }
