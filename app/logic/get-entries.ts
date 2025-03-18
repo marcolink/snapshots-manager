@@ -26,7 +26,7 @@ export const getEntries = async ({q, limit = 100}: GetEntriesParams) => {
       entry: entries.entry,
       operation: entries.operation,
       createdAt: entries.createdAt,
-      raw_entry: entries.raw_entry,
+      // raw_entry: entries.raw_entry,
       patch: entries.patch,
       signature: entries.signature,
       matches: sql<string[]>`sig_ids.matches`

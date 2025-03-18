@@ -19,7 +19,7 @@ export function UpdateOnSysChange() {
         submit(updateFormRef.current)
       }, TIMEOUT)
     }
-    // should updateFormRef.current be bart of the deps array?
+    // should updateFormRef.current be part of the deps array?
   }, [submit])
 
   useEffect(() => {
