@@ -54,22 +54,7 @@ If we create a new patch entry for every event (`save`, `auto_save`, `delete`, `
 
 ![flow-diagram.png](assets/flow-diagram.png)
 
-
-
-
-
 ## Development
-
-### Stack
-- [Remix](https://remix.run/)
-- [Tailwind CSS](https://tailwindcss.com/)
-- [Contentful](https://www.contentful.com/)
-- [Generate JSONPatch](https://www.npmjs.com/package/generate-json-patch)
-- [Vite](https://vitejs.dev/)
-- [Vitest](https://vitest.dev/)
-- [TypeScript](https://www.typescriptlang.org/)
-- [drizzle](https://drizzle.dev/)
-- [zod](https://zod.dev/)
 
 Run the dev server:
 ```shellscript
@@ -81,7 +66,7 @@ View the database:
 npm run db-view
 ```
 
-### Running Locally
+### Run Locally
 You can either run the app with a remote database, or you can spin up a local database.
 
 #### Local Database
@@ -113,5 +98,3 @@ You can provide a postgres database connection string in the `.env` file (or via
 ### Drizzle Setup
 After setting the connection string, you must push your schema via `npx drizzle-kit push`. 
 Alternatively, you can also run `npx drizzle-kit migrate` to apply the schema via migrations.
-
-

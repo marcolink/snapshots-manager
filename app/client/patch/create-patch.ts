@@ -19,11 +19,10 @@ export const createPatch = async (data: Params) => {
   // @ts-expect-error to lazy to fix
   const version = data.raw.sys.revision ?? data.raw.sys.version
 
-  // console.log(`reference entry version: ${referenceEntry.version}, current version: ${version}`)
-
   let patch: Patch = []
-  let rawEntry: EntryProps
+  let rawEntry: EntryProps = source
 
+  // for operations that provide an entry payload, we can create a patch
   if (
     data.operation === 'save' ||
     data.operation === 'auto_save' ||
@@ -31,17 +30,8 @@ export const createPatch = async (data: Params) => {
     data.operation === 'publish'
   ) {
     const target = data.raw;
-
-    patch = createEntryPatch({
-      fields: source.fields,
-      metadata: source.metadata,
-    }, {
-      fields: target.fields,
-      metadata: target.metadata,
-    });
+    patch = createEntryPatch(source, target)
     rawEntry = target;
-  } else {
-    rawEntry = source;
   }
 
   return db.transaction(async (tx) => {

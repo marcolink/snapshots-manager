@@ -94,7 +94,7 @@ describe('Create Entry', async () => {
   })
 
   //currently not sure if this is the correct behavior
-  it.skip('for the first entry appearance, it should create a new "archive" entry with default raw', async () => {
+  it('for the first entry appearance, it should create a new "archive" entry with default raw', async () => {
     const payload1 = createEntryPayload({
       key,
       fields: {

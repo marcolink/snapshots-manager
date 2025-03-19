@@ -55,7 +55,6 @@ export const action: ActionFunction = async ({request}) => {
 
   try {
     const entry = await request.json()
-    // console.log({operation, entry})
     const dnEntry = await client.patch.create({
       raw: entry,
       operation: operation,
