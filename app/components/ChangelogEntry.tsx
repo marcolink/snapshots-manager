@@ -15,7 +15,7 @@ import {css} from "emotion";
 import tokens from "@contentful/f36-tokens";
 import {Conditional} from "~/components/Conditional";
 import {Note} from "@contentful/f36-note";
-import {NoPatchActions} from "~/logic/streams";
+import {NoPatchActions} from "~/client/streams";
 
 const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
 

@@ -5,71 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1724487726824,
-      "tag": "0000_sweet_roland_deschain",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1724701572518,
-      "tag": "0001_tired_white_queen",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1724702497591,
-      "tag": "0002_yellow_sleepwalker",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1724705648897,
-      "tag": "0003_closed_callisto",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1724741538269,
-      "tag": "0004_flashy_fat_cobra",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1724743675149,
-      "tag": "0005_young_peter_quill",
-      "breakpoints": true
-    },
-    {
-      "idx": 6,
-      "version": "7",
-      "when": 1724973927903,
-      "tag": "0006_true_red_skull",
-      "breakpoints": true
-    },
-    {
-      "idx": 7,
-      "version": "7",
-      "when": 1724977248245,
-      "tag": "0007_sharp_maddog",
-      "breakpoints": true
-    },
-    {
-      "idx": 8,
-      "version": "7",
-      "when": 1742280497894,
-      "tag": "0008_certain_forgotten_one",
-      "breakpoints": true
-    },
-    {
-      "idx": 9,
-      "version": "7",
-      "when": 1742334616478,
-      "tag": "0009_polite_microchip",
+      "when": 1742414964667,
+      "tag": "0000_melted_kat_farrell",
       "breakpoints": true
     }
   ]

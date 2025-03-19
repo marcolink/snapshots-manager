@@ -11,9 +11,7 @@
     "test": "vitest",
     "coverage": "vitest run --coverage",
     "typecheck": "tsc",
-    "db:view": "drizzle-kit studio",
-    "db:generate-migration": "npx drizzle-kit generate",
-    "db:apply-migration": "npx drizzle-kit migrate"
+    "db-view": "drizzle-kit studio"
   },
   "dependencies": {
     "@contentful/app-sdk": "^4.29.1",
@@ -24,8 +22,6 @@
     "@contentful/rich-text-react-renderer": "^15.22.10",
     "@remix-run/serve": "^2.11.2",
     "@tanstack/react-query": "^5.52.2",
-    "@tanstack/react-table": "^8.20.5",
-    "@vercel/postgres": "^0.9.0",
     "contentful-management": "^11.31.8",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
@@ -61,7 +57,7 @@
     "react-router-dom": "^7.3.0",
     "remix-development-tools": "^4.4.1",
     "tailwindcss": "^3.4.4",
-    "typescript": "^5.1.6",
+    "typescript": "^5.8.2",
     "vite": "^6.2.2",
     "vite-tsconfig-paths": "^4.2.1",
     "vitest": "^3.0.9"

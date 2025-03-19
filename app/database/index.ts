@@ -1,5 +1,5 @@
 import { drizzle } from 'drizzle-orm/node-postgres';
-import {entries, rawEntries} from "~/database/schema";
+import {PatchTable, EntryTable} from "~/database/schema";
 import  pg from "pg";
 
 const postgresUrl = import.meta.env.VITE_POSTGRES_URL;
@@ -14,8 +14,8 @@ const pool = new pg.Pool({
 
 export const db = drizzle(pool, {
   schema: {
-    entries,
-    rawEntries,
+    PatchTable,
+    EntryTable,
   },
   logger: false,
 });

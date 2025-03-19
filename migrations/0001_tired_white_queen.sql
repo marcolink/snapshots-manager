@@ -1,1 +1,0 @@
-ALTER TABLE "entry_table" ALTER COLUMN "patch" SET DEFAULT '[]'::jsonb;

@@ -1,11 +1,11 @@
 {
-  "id": "4158de13-ab03-4a77-b841-943e249bc8db",
+  "id": "f4957c3c-b0f7-4433-9a4a-68127b7166c8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.entry_table": {
-      "name": "entry_table",
+    "public.raw_entry_table": {
+      "name": "raw_entry_table",
       "schema": "",
       "columns": {
         "id": {
@@ -32,6 +32,12 @@
           "primaryKey": false,
           "notNull": true
         },
+        "entry": {
+          "name": "entry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -39,20 +45,125 @@
           "notNull": true,
           "default": "now()"
         },
-        "raw_entry": {
-          "name": "raw_entry",
+        "raw": {
+          "name": "raw",
           "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
-        "patch": {
-          "name": "patch",
-          "type": "jsonb",
+        "stream": {
+          "name": "stream",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "raw_entry_table_space_environment_entry_stream_unique": {
+          "name": "raw_entry_table_space_environment_entry_stream_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "space",
+            "environment",
+            "entry",
+            "stream"
+          ]
+        }
+      }
+    },
+    "public.entry_table": {
+      "name": "entry_table",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "by_user": {
+          "name": "by_user",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "version": {
+          "name": "version",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "space": {
+          "name": "space",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "environment": {
+          "name": "environment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "entry": {
+          "name": "entry",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "operation": {
+          "name": "operation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "patch": {
+          "name": "patch",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'[]'::jsonb"
+        }
+      },
+      "indexes": {
+        "entry_table_space_environment_entry_index": {
+          "name": "entry_table_space_environment_entry_index",
+          "columns": [
+            {
+              "expression": "space",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "environment",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "entry",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {}

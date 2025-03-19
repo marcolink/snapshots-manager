@@ -1,10 +1,10 @@
 import {beforeEach, describe, expect, it} from "vitest";
-import {createEntry} from "~/logic/create-entry";
+import {createPatch} from "~/client/patch/create-patch";
 import {createEntryPayload} from "../../helpers";
 import {EntryProps} from "contentful-management";
 import {WebhookActions} from "~/types";
-import {getRawEntry} from "~/logic/get-raw-entry";
 import {deepClone} from "@vitest/utils";
+import {getRawEntry} from "~/client/entry/get-raw-entry";
 
 describe('Create Entry', async () => {
   let key = ''
@@ -13,7 +13,7 @@ describe('Create Entry', async () => {
     key = `test-${Date.now()}`
   })
 
-  const getCreateEntryParams = (payload: EntryProps, operation: WebhookActions = 'create'): Parameters<typeof createEntry>[0] => {
+  const getCreateEntryParams = (payload: EntryProps, operation: WebhookActions = 'create'): Parameters<typeof createPatch>[0] => {
     return {
       space: `${key}-space`,
       environment: `${key}-environment`,
@@ -23,8 +23,8 @@ describe('Create Entry', async () => {
     }
   }
 
-  const createEntryTest = async (props: Parameters<typeof createEntry>[0]) => {
-    const entry = await createEntry(props)
+  const createEntryTest = async (props: Parameters<typeof createPatch>[0]) => {
+    const entry = await createPatch(props)
     const rawEntry = await getRawEntry({...props, entry: props.raw.sys.id, operation: props.operation})
     return {entry, rawEntry}
   }
