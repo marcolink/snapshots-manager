@@ -5,10 +5,10 @@ A contentful app that allows you to travel back in time and see how the world ha
 
 ## How it works
 This app uses App Events (similar to webhooks) to listen for changes of entries in the contentful space. 
-When a change is detected, the app will create a patch for each change and store it in the database. 
+When a change is detected, the app will create a patch for each change and store it in the data store. 
 This lets you scroll through the history of your content and see how it has evolved over time.
 
-In context of contentful content, a change describes the change of a value for a field and a locale. This can be represented with a JSON patch operation like this:
+In context of contentful content, a patch describes the change of a value for a field and a locale. This can be represented with a JSON patch operation like this:
 
 ```json
 {
@@ -34,7 +34,7 @@ We can also combine a set of operations into a more meaningful change:
 ]
 ```
 
-We can store metadata such as space, environment, entry, version along the change, to later receive a stream of changes of a particular entry on a specific space environment. 
+We can store metadata such as space, environment, entry, version along the patch, to later receive a stream of changes of a particular entry on a specific space environment. 
 ```json
 {
   "space": "<space-id>",
@@ -50,7 +50,7 @@ We can store metadata such as space, environment, entry, version along the chang
 }
 ```
 
-If we create a new change entry for every event (save, auto_save, delete, archive, unarchive, publish, unpublish) in our system, we get the highest possible resolution (keep in mind that some of these events in not changing content).
+If we create a new patch entry for every event (`save`, `auto_save`, `delete`, `archive`, `unarchive`, `publish`, `unpublish`) in our system, we get the highest possible resolution (keep in mind that some of these events are not changing content, but its availability).
 
 ![flow-diagram.png](assets/flow-diagram.png)
 
