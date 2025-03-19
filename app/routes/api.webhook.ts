@@ -1,5 +1,5 @@
 import {ActionFunction} from "@remix-run/node";
-import {client} from "~/logic";
+import {client} from "~/client";
 import {toRecord} from "~/utils/toRecord";
 import {
   ContentfulHeadersValidation,
@@ -47,10 +47,6 @@ export const action: ActionFunction = async ({request}) => {
     return Response.json({
       success: false,
       message: `Topic "${parsedHeaders[ContentfulWebhookHeaders.Topic]}" not supported (yet).`
-    }, {
-      headers: {
-        'Content-Type': 'text/plain'
-      }
     });
   }
 
@@ -59,8 +55,8 @@ export const action: ActionFunction = async ({request}) => {
 
   try {
     const entry = await request.json()
-    console.log({operation, entry})
-    const dnEntry = await client.createEntry({
+    // console.log({operation, entry})
+    const dnEntry = await client.patch.create({
       raw: entry,
       operation: operation,
       space: entry.sys.space.sys.id,

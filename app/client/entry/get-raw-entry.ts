@@ -1,8 +1,8 @@
 import {db} from "~/database";
 import {and, eq} from "drizzle-orm";
-import {rawEntries} from "~/database/schema";
+import {EntryTable} from "~/database/schema";
 import {WebhookActions} from "~/types";
-import {streamKeyForOperation} from "~/logic/streams";
+import {streamKeyForOperation} from "~/client/streams";
 
 export async function getRawEntry(data: {
   space: string,
@@ -12,13 +12,13 @@ export async function getRawEntry(data: {
 }) {
   const result = await db
     .select()
-    .from(rawEntries)
+    .from(EntryTable)
     .where(
       and(
-        eq(rawEntries.space, data.space),
-        eq(rawEntries.environment, data.environment),
-        eq(rawEntries.entry, data.entry),
-        eq(rawEntries.stream, streamKeyForOperation(data.operation)),
+        eq(EntryTable.space, data.space),
+        eq(EntryTable.environment, data.environment),
+        eq(EntryTable.entry, data.entry),
+        eq(EntryTable.stream, streamKeyForOperation(data.operation)),
       ),
     )
     .limit(1);

@@ -13,7 +13,7 @@ const stream = customType<{data: 'publish' | 'draft', notNull: true}>({
   },
 })
 
-export const entries = pgTable('entry_table', {
+export const PatchTable = pgTable('entry_table', {
   id: serial('id').primaryKey(),
   byUser: text('by_user').notNull(),
   version: integer('version').notNull(),
@@ -27,7 +27,7 @@ export const entries = pgTable('entry_table', {
   spaceEnvEntryIdx: index().on(table.space, table.environment, table.entry),
 }));
 
-export const rawEntries = pgTable('raw_entry_table', {
+export const EntryTable = pgTable('raw_entry_table', {
   id: serial('id').primaryKey(),
   version: integer('version').notNull(),
   space: text('space').notNull(),
@@ -40,5 +40,5 @@ export const rawEntries = pgTable('raw_entry_table', {
   uniqueSpaceEnvEntryStream: unique().on(table.space, table.environment, table.entry, table.stream),
 }));
 
-export type SelectEntry = typeof entries.$inferSelect;
-export type SelectRawEntry = typeof rawEntries.$inferSelect;
+export type SelectPatch = typeof PatchTable.$inferSelect;
+export type SelectEntry = typeof EntryTable.$inferSelect;

@@ -4,7 +4,7 @@ import {toRecord} from "~/utils/toRecord";
 import {useContentfulAutoResizer} from "~/hooks/useContentfulAutoResizer";
 import {Note} from "@contentful/f36-note";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
-import {client} from "~/logic";
+import {client} from "~/client";
 import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
 import {promiseHash} from "remix-utils/promise";
 import {Flex} from "@contentful/f36-core";
@@ -25,12 +25,12 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
 
   return Response.json(await promiseHash({
-    data: client.getEntries({
+    data: client.patch.getMany({
       q: {
         ...q, environment: q.environmentAlias || q.environment
       }, limit: MAX_VIEW_ITEMS
     }),
-    metadata: client.getEntriesCount({
+    metadata: client.patch.getCount({
       q: {
         ...q, environment: q.environmentAlias || q.environment
       }

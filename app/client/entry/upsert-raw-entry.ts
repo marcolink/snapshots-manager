@@ -1,11 +1,11 @@
+import {EntryTable} from "~/database/schema";
+import {streamKeyForOperation} from "./../streams";
+import {Params} from "./../types";
 import {db} from "~/database";
-import {rawEntries} from "~/database/schema";
-import {streamKeyForOperation} from "~/logic/streams";
-import {Params} from "~/logic/types";
 
-export function upsertRawEntry(data:Params & {version: number}) {
-  return db
-    .insert(rawEntries)
+export function upsertRawEntry(data:Params & {version: number}, dbContext: typeof db = db) {
+  return dbContext
+    .insert(EntryTable)
     .values({
       space: data.space,
       environment: data.environment,
@@ -16,7 +16,7 @@ export function upsertRawEntry(data:Params & {version: number}) {
       createdAt: new Date(), // or omit to use defaultNow()
     })
     .onConflictDoUpdate({
-      target: [rawEntries.space, rawEntries.environment, rawEntries.entry, rawEntries.stream],
+      target: [EntryTable.space, EntryTable.environment, EntryTable.entry, EntryTable.stream],
       set: {
         version: data.version,
         raw: data.raw,

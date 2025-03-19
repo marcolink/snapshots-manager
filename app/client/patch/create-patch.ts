@@ -1,14 +1,14 @@
 import {EntryProps} from "contentful-management";
 import {db} from "~/database";
-import {entries, SelectRawEntry} from "~/database/schema";
-import {streamKeyForOperation} from "~/logic/streams";
+import {PatchTable, SelectEntry} from "~/database/schema";
+import {streamKeyForOperation} from "./../streams";
 import {createEntryPatch} from "~/utils/create-entry-patch";
 import {Patch} from "generate-json-patch";
-import {Params} from "~/logic/types";
-import {getRawEntry} from "~/logic/get-raw-entry";
-import {upsertRawEntry} from "~/logic/upsert-raw-entry";
+import {Params} from "./../types";
+import {getRawEntry} from "../entry/get-raw-entry";
+import {upsertRawEntry} from "../entry/upsert-raw-entry";
 
-export const createEntry = async (data: Params) => {
+export const createPatch = async (data: Params) => {
   const referenceEntry = (await getRawEntry({
     space: data.space,
     environment: data.environment,
@@ -44,21 +44,21 @@ export const createEntry = async (data: Params) => {
     rawEntry = source;
   }
 
-  // todo: make it a transaction
-  await upsertRawEntry({...data, version, raw: rawEntry})
-
-  return db.insert(entries).values({
-    version: version,
-    space: data.space,
-    environment: data.environment,
-    entry: data.raw.sys.id,
-    operation: data.operation,
-    byUser: data.byUser,
-    patch: patch,
-  }).returning().execute();
+  return db.transaction(async (tx) => {
+    await upsertRawEntry({...data, version, raw: rawEntry}, tx)
+    return tx.insert(PatchTable).values({
+      version: version,
+      space: data.space,
+      environment: data.environment,
+      entry: data.raw.sys.id,
+      operation: data.operation,
+      byUser: data.byUser,
+      patch: patch,
+    }).returning().execute();
+  });
 }
 
-function getDefaultReferenceEntry(data: Params): SelectRawEntry {
+function getDefaultReferenceEntry(data: Params): SelectEntry {
   return {
     createdAt: new Date(),
     id: 0,

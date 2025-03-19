@@ -7,8 +7,8 @@ services:
     restart: always
     environment:
       POSTGRES_USER: default
-      POSTGRES_PASSWORD: jdEW7R6Athnm
-      POSTGRES_DB: verceldb
+      POSTGRES_PASSWORD: pg-password
+      POSTGRES_DB: time-machine
     ports:
       - "5432:5432"
     volumes:

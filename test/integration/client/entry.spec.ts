@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it} from "vitest";
-import {upsertRawEntry} from "~/logic/upsert-raw-entry";
-import {getRawEntry} from "~/logic/get-raw-entry";
 import {deepClone} from "@vitest/utils";
+import {upsertRawEntry} from "~/client/entry/upsert-raw-entry";
+import {getRawEntry} from "~/client/entry/get-raw-entry";
 
 describe('Upsert raw Entry', async () => {
 
@@ -26,13 +26,13 @@ describe('Upsert raw Entry', async () => {
       byUser: 'test-user'
     }
 
-    // @ts-ignore
+    // @ts-expect-error to lazy to fix
     await upsertRawEntry(payload);
 
     const updatedEntryPayload = deepClone(payload)
     updatedEntryPayload.raw.sys.revision = 2
 
-    // @ts-ignore
+    // @ts-expect-error to lazy to fix
     await upsertRawEntry({...updatedEntryPayload, operation: 'auto_save'});
 
     const response = await getRawEntry({

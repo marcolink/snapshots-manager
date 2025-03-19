@@ -7,7 +7,7 @@ import {EntryDetailsModal} from "~/components/EntryDetailsModal";
 import {useCallback, useState} from "react";
 import {ChangelogEntry} from "~/components/ChangelogEntry";
 import {useUpdateEntry} from "~/hooks/useUpdateEntry";
-import {Streams} from "~/logic/streams";
+import {Streams} from "~/client/streams";
 import {Note} from "@contentful/f36-note";
 import {renderOperationIcon} from "~/components/OperationIcon";
 

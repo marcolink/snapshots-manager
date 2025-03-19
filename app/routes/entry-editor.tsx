@@ -4,8 +4,8 @@ import {toRecord} from "~/utils/toRecord";
 import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
 import {Changelog} from "~/components/Changelog";
 import {Box, Flex} from '@contentful/f36-core';
-import {client} from "~/logic";
-import {StreamKeyDec, StreamKeys} from "~/logic/streams";
+import {client} from "~/client";
+import {StreamKeyDec, StreamKeys} from "~/client/streams";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
 import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
 import {EntryData} from "~/types";
@@ -14,7 +14,7 @@ export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
   const stream = StreamKeyDec.catch(StreamKeys.publish).parse(q.stream)
 
-  const data = await client.getEntries({
+  const data = await client.patch.getMany({
     q: {
       ...q,
       environment: q.environmentAlias || q.environment,
