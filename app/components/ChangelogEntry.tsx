@@ -1,4 +1,4 @@
-import {EntryDataWithUser, WebhookActions} from "~/types";
+import {PatchEntryWithUser, WebhookEvent} from "~/types";
 import {Badge} from "@contentful/f36-badge";
 import {Card} from "@contentful/f36-card";
 import {Flex} from "@contentful/f36-core";
@@ -15,9 +15,9 @@ import {css} from "emotion";
 import tokens from "@contentful/f36-tokens";
 import {Conditional} from "~/components/Conditional";
 import {Note} from "@contentful/f36-note";
-import {NoPatchActions} from "~/client/streams";
+import {WebhookNoPatchEvent} from "~/client/streams";
 
-const detailOperations: WebhookActions[] = ['publish', 'save', 'auto_save', 'create']
+const detailOperations: WebhookEvent[] = ['publish', 'save', 'auto_save', 'create']
 
 const styles = {
   publish: css({
@@ -50,13 +50,13 @@ export function ChangelogEntry(
     onShowPatch,
     onCherryPick
   }: {
-    entry: EntryDataWithUser,
+    entry: PatchEntryWithUser,
     isProd: boolean,
     isPrev: boolean,
     isLoadingUsers?: boolean,
     locales?: string[],
-    onShowPatch: (entry: EntryDataWithUser) => void
-    onCherryPick: (entry: EntryDataWithUser) => void
+    onShowPatch: (entry: PatchEntryWithUser) => void
+    onCherryPick: (entry: PatchEntryWithUser) => void
   }) {
   let additionalBadge = null
   if (isProd) {
@@ -66,7 +66,7 @@ export function ChangelogEntry(
   }
 
   const hasChange = Boolean((entry.patch as Patch).length)
-  const isNoPatchAction = NoPatchActions.includes(entry.operation)
+  const isNoPatchAction = WebhookNoPatchEvent.some(e => e === entry.operation)
 
   return (
     <Card
@@ -120,7 +120,7 @@ export function ChangelogEntry(
   )
 }
 
-function bgColorForOperation(operation: WebhookActions) {
+function bgColorForOperation(operation: WebhookEvent) {
   switch (operation) {
     case 'publish':
       return styles.publish

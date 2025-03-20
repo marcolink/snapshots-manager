@@ -1,8 +1,8 @@
 import {BadgeVariant} from "@contentful/f36-badge";
-import {WebhookActions} from "~/types";
+import {WebhookEvent} from "~/types";
 import {Text} from "@contentful/f36-typography";
 
-export const OperationMap: Record<WebhookActions, BadgeVariant> = {
+export const OperationMap: Record<WebhookEvent, BadgeVariant> = {
   auto_save: 'primary',
   save: 'primary',
   create: 'primary-filled',
@@ -21,6 +21,6 @@ export function OperationBadge({operation}: { operation: string }) {
   return <Text as={'code'} fontColor={'gray500'}>{operation}</Text>
 }
 
-function isKnownOperation(operation: string): operation is WebhookActions {
+function isKnownOperation(operation: string): operation is WebhookEvent {
   return operation in OperationMap
 }

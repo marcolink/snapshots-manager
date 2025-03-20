@@ -1,12 +1,12 @@
-import {EntryDataWithUser, WebhookActions} from "~/types";
+import {PatchEntryWithUser, WebhookEvent} from "~/types";
 import {ArchiveIcon, ArrowDownwardIcon, ArrowUpwardIcon, EditIcon, PlusIcon} from "@contentful/f36-icons";
 import {Tooltip} from "@contentful/f36-tooltip";
 import {printVersion} from "~/utils/change-version";
 import {ConditionalWrapper} from "~/components/ConditionalWrapper";
 
-type Props = { operation: WebhookActions };
+type Props = { operation: WebhookEvent };
 
-const PastAction: Record<WebhookActions, string> = {
+const PastAction: Record<WebhookEvent, string> = {
   create: 'created',
   auto_save: 'auto saved',
   save: 'saved',
@@ -39,7 +39,7 @@ export function OperationIcon({operation}: Props) {
   return <EditIcon variant={'primary'}/>
 }
 
-export function operationBackgroundColorClass(operation: WebhookActions) {
+export function operationBackgroundColorClass(operation: WebhookEvent) {
   if (['auto_save', 'save'].includes(operation)) {
     return 'bg-blue-200'
   }
@@ -58,7 +58,7 @@ export function operationBackgroundColorClass(operation: WebhookActions) {
   return 'bg-gray-200'
 }
 
-export function renderOperationIcon(entry: EntryDataWithUser, tooltip: boolean = false) {
+export function renderOperationIcon(entry: PatchEntryWithUser, tooltip: boolean = false) {
   const tooltipContent = `${PastAction[entry.operation]} ${printVersion(entry)}`
   const component = (
     <ConditionalWrapper

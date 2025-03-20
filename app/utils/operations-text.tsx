@@ -1,4 +1,4 @@
-import {EntryDataWithUser} from "~/types";
+import {PatchEntryWithUser} from "~/types";
 import {Text} from "@contentful/f36-typography";
 import {Patch} from "generate-json-patch";
 import {numberToWords} from "~/utils/number-to-words";
@@ -6,7 +6,7 @@ import {createMetadataChange} from "~/utils/patch-utils";
 
 const pluralize = (word: string, count: number) => count === 1 ? word : `${word}s`
 
-export function operationsText(entry: EntryDataWithUser, locales: string[] = []) {
+export function operationsText(entry: PatchEntryWithUser, locales: string[] = []) {
   const patch = entry.patch as Patch
 
   const fieldChanges = patch

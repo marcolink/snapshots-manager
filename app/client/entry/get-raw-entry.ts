@@ -1,16 +1,16 @@
-import {db} from "~/database";
+import {store} from "~/store";
 import {and, eq} from "drizzle-orm";
-import {EntryTable} from "~/database/schema";
-import {WebhookActions} from "~/types";
+import {EntryTable} from "~/store/schema";
+import {WebhookEvent} from "~/types";
 import {streamKeyForOperation} from "~/client/streams";
 
 export async function getRawEntry(data: {
   space: string,
   environment: string,
   entry: string,
-  operation: WebhookActions
+  operation: WebhookEvent
 }) {
-  const result = await db
+  const result = await store
     .select()
     .from(EntryTable)
     .where(

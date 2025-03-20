@@ -1,6 +1,6 @@
 import {describe, expect, it} from "vitest";
 import {EntryProps} from "contentful-management";
-import {createEntryPatch, PatchableEntry} from "~/utils/create-entry-patch";
+import {createEntryPatch, PatchableEntry} from "~/client/utils/create-entry-patch";
 
 const emptyMetadata: EntryProps['metadata'] = {
   tags: []

@@ -1,7 +1,7 @@
 import {customType, index, integer, jsonb, pgTable, serial, text, timestamp, unique} from 'drizzle-orm/pg-core';
-import {WebhookActions} from "~/types";
+import {WebhookEvent} from "~/types";
 
-const operation = customType<{data: WebhookActions, notNull: true}>({
+const operation = customType<{data: WebhookEvent, notNull: true}>({
   dataType() {
     return 'text';
   },

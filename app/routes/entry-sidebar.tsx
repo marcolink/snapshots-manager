@@ -17,7 +17,7 @@ import {Text} from "@contentful/f36-typography";
 import {operationsText} from "~/utils/operations-text";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
-import {EntryData} from "~/types";
+import {PatchEntry} from "~/types";
 
 const MAX_VIEW_ITEMS = 50
 
@@ -42,7 +42,7 @@ export default function EntrySidebar() {
   useContentfulAutoResizer()
 
   const {data: entries, metadata} = useLoaderData<typeof loader>()
-  const {data} = useWithContentfulUsers<EntryData>(entries)
+  const {data} = useWithContentfulUsers<PatchEntry>(entries)
   const {sdk} = useInBrowserSdk()
 
   if (data.length === 0) {

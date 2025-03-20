@@ -10,7 +10,7 @@ if(!postgresUrl) {
 }
 
 export default defineConfig({
-  schema: './app/database/schema.ts',
+  schema: './app/store/schema.ts',
   out: './migrations',
   dialect: 'postgresql',
   dbCredentials: {

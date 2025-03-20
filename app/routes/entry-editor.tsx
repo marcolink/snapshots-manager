@@ -8,7 +8,7 @@ import {client} from "~/client";
 import {StreamKeyDec, StreamKeys} from "~/client/streams";
 import {ExistingSearchParams} from "~/components/ExistingSearchParams";
 import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
-import {EntryData} from "~/types";
+import {PatchEntry} from "~/types";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)
@@ -28,7 +28,7 @@ export default function Page() {
   const {data: entries} = useLoaderData<typeof loader>()
   const {
     data, isUsersLoading,
-  } = useWithContentfulUsers<EntryData>(entries)
+  } = useWithContentfulUsers<PatchEntry>(entries)
 
   const submit = useSubmit()
 

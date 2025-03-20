@@ -1,11 +1,11 @@
 import {Modal} from "@contentful/f36-modal";
 import {SectionHeading} from "@contentful/f36-typography";
-import {EntryDataWithUser} from "~/types";
+import {PatchEntryWithUser} from "~/types";
 import {printVersion} from "~/utils/change-version";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
 
 type Props = {
-  entry: EntryDataWithUser
+  entry: PatchEntryWithUser
   onClose: () => void
   isShown: boolean
 };
