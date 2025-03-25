@@ -1,10 +1,10 @@
 import {beforeEach, describe, expect, it} from "vitest";
-import {createPatch} from "~/client/patch/create-patch";
+import {createPatch} from "~/backend/client/patch/create-patch";
 import {createEntryPayload} from "../../helpers";
 import {EntryProps} from "contentful-management";
-import {WebhookEvent} from "~/types";
 import {deepClone} from "@vitest/utils";
-import {getRawEntry} from "~/client/entry/get-raw-entry";
+import {getRawEntry} from "~/backend/client/entry/get-raw-entry";
+import {WebhookEvent} from "~/shared/types";
 
 describe('Create Entry', async () => {
   let key = ''

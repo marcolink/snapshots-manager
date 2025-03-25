@@ -8,7 +8,7 @@ import { remixDevTools } from "remix-development-tools";
 export default defineConfig({
   plugins: [
     remixDevTools(),
-    remix({
+    !process.env.VITEST && remix({
       future: {
         v3_fetcherPersist: true,
         v3_relativeSplatPath: true,
