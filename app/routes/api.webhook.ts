@@ -1,5 +1,5 @@
 import {ActionFunction} from "@remix-run/node";
-import {client} from "~/client";
+import {client} from "~/backend/client";
 import {toRecord} from "~/utils/toRecord";
 import {
   ContentfulHeadersValidation,

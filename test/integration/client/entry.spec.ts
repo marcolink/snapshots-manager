@@ -1,7 +1,7 @@
 import {beforeEach, describe, expect, it} from "vitest";
 import {deepClone} from "@vitest/utils";
-import {upsertRawEntry} from "~/client/entry/upsert-raw-entry";
-import {getRawEntry} from "~/client/entry/get-raw-entry";
+import {upsertRawEntry} from "~/backend/client/entry/upsert-raw-entry";
+import {getRawEntry} from "~/backend/client/entry/get-raw-entry";
 
 describe('Upsert raw Entry', async () => {
 

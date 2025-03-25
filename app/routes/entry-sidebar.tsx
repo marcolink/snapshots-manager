@@ -1,23 +1,24 @@
 import {LoaderFunctionArgs} from "@remix-run/node";
 import {Form, useLoaderData} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
-import {useContentfulAutoResizer} from "~/hooks/useContentfulAutoResizer";
+import {useContentfulAutoResizer} from "~/frontend/hooks/useContentfulAutoResizer";
 import {Note} from "@contentful/f36-note";
-import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
-import {client} from "~/client";
-import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
+import {useWithContentfulUsers} from "~/frontend/hooks/useWithContentfulUsers";
+import {client} from "~/backend/client";
+import {UpdateOnSysChange} from "~/frontend/components/UpdateOnSysChange";
 import {promiseHash} from "remix-utils/promise";
 import {Flex} from "@contentful/f36-core";
-import {ExistingSearchParams} from "~/components/ExistingSearchParams";
+import {ExistingSearchParams} from "~/frontend/components/ExistingSearchParams";
 import {IconButton} from "@contentful/f36-button";
 import {CycleIcon} from "@contentful/f36-icons";
-import {MiniTimeline} from "~/components/MiniTimeline";
-import {renderOperationIcon} from "~/components/OperationIcon";
+import {MiniTimeline} from "~/frontend/components/MiniTimeline";
+import {renderOperationIcon} from "~/frontend/components/OperationIcon";
 import {Text} from "@contentful/f36-typography";
-import {operationsText} from "~/utils/operations-text";
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
-import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
-import {PatchEntry} from "~/types";
+import {useInBrowserSdk} from "~/frontend/hooks/useInBrowserSdk";
+
+import {PatchEntry} from "~/shared/types";
+import {OperationsText} from "~/frontend/components/OperationsText";
 
 const MAX_VIEW_ITEMS = 50
 
@@ -59,7 +60,7 @@ export default function EntrySidebar() {
         itemRenderer={entry => (
           <ul>
             <li><Text fontSize={'fontSizeS'}>{formatRelativeDateTime(entry.createdAt)}</Text></li>
-            <li>{operationsText(entry, sdk?.locales.available || [])}</li>
+            <li><OperationsText entry={entry} locales={sdk?.locales.available || []}/></li>
           </ul>
         )
         }

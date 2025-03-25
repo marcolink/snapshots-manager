@@ -1,14 +1,15 @@
 import {LoaderFunctionArgs} from "@remix-run/node";
 import {Form, useLoaderData, useSubmit} from "@remix-run/react";
 import {toRecord} from "~/utils/toRecord";
-import {useWithContentfulUsers} from "~/hooks/useWithContentfulUsers";
-import {Changelog} from "~/components/Changelog";
+import {useWithContentfulUsers} from "~/frontend/hooks/useWithContentfulUsers";
+import {Changelog} from "~/frontend/components/Changelog";
 import {Box, Flex} from '@contentful/f36-core';
-import {client} from "~/client";
-import {StreamKeyDec, StreamKeys} from "~/client/streams";
-import {ExistingSearchParams} from "~/components/ExistingSearchParams";
-import {UpdateOnSysChange} from "~/components/UpdateOnSysChange";
-import {PatchEntry} from "~/types";
+import {client} from "~/backend/client";
+import {StreamKeyDec, StreamKeys} from "~/shared/streams";
+import {ExistingSearchParams} from "~/frontend/components/ExistingSearchParams";
+import {UpdateOnSysChange} from "~/frontend/components/UpdateOnSysChange";
+
+import {PatchEntry} from "~/shared/types";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const q = toRecord(new URL(request.url).searchParams)

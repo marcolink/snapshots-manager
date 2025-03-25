@@ -1,11 +1,11 @@
 import {type MetaFunction} from "@remix-run/node";
 import { Outlet } from "@remix-run/react";
-import {useAppSdkRouter} from "~/hooks/useAppSdkRouter";
+import {useAppSdkRouter} from "~/frontend/hooks/useAppSdkRouter";
 
 export const meta: MetaFunction = () => {
   return [
-    {title: "Snapshot Manager"},
-    {name: "description", content: "Welcome to Remix!"},
+    {title: "Time Machine"},
+    {name: "description", content: "A time machine app"},
   ];
 };
 
