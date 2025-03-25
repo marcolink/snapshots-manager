@@ -9,5 +9,5 @@ export function useInBrowser(func: () => void, dependencies: DependencyList = []
     } else {
       console.warn('This hook can only be used in the browser.');
     }
-  }, [isBrowser, ...dependencies]);
+  }, [isBrowser, dependencies]);
 }

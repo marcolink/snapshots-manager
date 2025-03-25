@@ -32,4 +32,4 @@ export function EntryDetailsModal({entry, onClose, isShown}: Props) {
       )}
     </Modal>
   );
-};
+}
