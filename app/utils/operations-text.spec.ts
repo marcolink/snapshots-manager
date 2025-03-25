@@ -2,7 +2,7 @@ import {Operation, Patch} from "generate-json-patch";
 import {describe, expect, it} from "vitest";
 import {operationsText} from "./operations-text";
 import {UserProps} from "contentful-management";
-import {EntryDataWithUser, WebhookActions} from "~/types";
+import {PatchEntryWithUser, WebhookEvent} from "~/types";
 import {render} from "@testing-library/react";
 
 describe("operations-text", function () {
@@ -40,7 +40,7 @@ describe("operations-text", function () {
   })
 })
 
-function testIt(operation: WebhookActions, patch: Patch, text: string | RegExp) {
+function testIt(operation: WebhookEvent, patch: Patch, text: string | RegExp) {
   const entry = testEntry(operation, patch)
   const {getByText} = render(operationsText(entry))
   const spanElement = getByText('Marco').closest('span');
@@ -121,7 +121,7 @@ const Operations: Record<string, Record<string, Operation>> = {
   }
 } as const
 
-function testEntry(operation: WebhookActions, patch: Patch): EntryDataWithUser {
+function testEntry(operation: WebhookEvent, patch: Patch): PatchEntryWithUser {
   return {
     patch,
     operation,

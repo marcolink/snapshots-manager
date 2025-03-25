@@ -2,7 +2,7 @@ import {beforeEach, describe, expect, it} from "vitest";
 import {createPatch} from "~/client/patch/create-patch";
 import {createEntryPayload} from "../../helpers";
 import {EntryProps} from "contentful-management";
-import {WebhookActions} from "~/types";
+import {WebhookEvent} from "~/types";
 import {deepClone} from "@vitest/utils";
 import {getRawEntry} from "~/client/entry/get-raw-entry";
 
@@ -13,7 +13,7 @@ describe('Create Entry', async () => {
     key = `test-${Date.now()}`
   })
 
-  const getCreateEntryParams = (payload: EntryProps, operation: WebhookActions = 'create'): Parameters<typeof createPatch>[0] => {
+  const getCreateEntryParams = (payload: EntryProps, operation: WebhookEvent = 'create'): Parameters<typeof createPatch>[0] => {
     return {
       space: `${key}-space`,
       environment: `${key}-environment`,

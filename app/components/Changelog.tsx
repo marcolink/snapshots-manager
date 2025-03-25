@@ -1,5 +1,5 @@
 import {formatRelativeDateTime} from "@contentful/f36-datetime";
-import {EntryDataWithUser} from "~/types";
+import {PatchEntryWithUser} from "~/types";
 import {Timeline} from "~/components/Timeline";
 import {useInBrowserSdk} from "~/hooks/useInBrowserSdk";
 import {EditorAppSDK} from "@contentful/app-sdk";
@@ -12,15 +12,15 @@ import {Note} from "@contentful/f36-note";
 import {renderOperationIcon} from "~/components/OperationIcon";
 
 export function Changelog({entries, isLoadingUsers}: {
-  entries: EntryDataWithUser[],
+  entries: PatchEntryWithUser[],
   isLoadingUsers?: boolean,
 }) {
   const {sdk} = useInBrowserSdk<EditorAppSDK>()
   const {mutate} = useUpdateEntry(sdk)
   const [isDetailsModalShown, setIsDetailsModalShown] = useState<boolean>(false)
-  const [detailsData, setDetailsData] = useState<EntryDataWithUser | null>(null)
+  const [detailsData, setDetailsData] = useState<PatchEntryWithUser | null>(null)
 
-  function onShowDetails(entry: EntryDataWithUser) {
+  function onShowDetails(entry: PatchEntryWithUser) {
     setDetailsData(entry)
     setIsDetailsModalShown(true)
   }
@@ -29,7 +29,7 @@ export function Changelog({entries, isLoadingUsers}: {
     setIsDetailsModalShown(false)
   }
 
-  const onCheryPick = useCallback((entry: EntryDataWithUser) => {
+  const onCheryPick = useCallback((entry: PatchEntryWithUser) => {
     mutate(entry)
   }, [mutate])
 

@@ -1,5 +1,5 @@
-import {db} from "~/database";
-import {PatchTable} from "~/database/schema";
+import {store} from "~/store";
+import {PatchTable} from "~/store/schema";
 import {and, desc, eq, inArray} from "drizzle-orm";
 import {StreamsType} from "~/types";
 import {Streams} from "~/client/streams";
@@ -15,7 +15,7 @@ type GetEntriesParams = {
 }
 
 export const getPatches = async ({q, limit = 100}: GetEntriesParams) => {
-  const query = db
+  const query = store
     .select({
       id: PatchTable.id,
       byUser: PatchTable.byUser,

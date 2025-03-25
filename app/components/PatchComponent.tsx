@@ -10,6 +10,7 @@ import {Tooltip} from "@contentful/f36-tooltip";
 import {documentToReactComponents} from "@contentful/rich-text-react-renderer";
 import {createFieldChange, createMetadataChange, MetadataChange} from "~/utils/patch-utils";
 import {z} from "zod";
+import {Document} from "@contentful/rich-text-types";
 
 export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: string[] }) {
   // lazy mofo - make it reduce
@@ -44,7 +45,7 @@ export function PatchComponent({patch, locales = []}: { patch: Patch, locales?: 
   )
 }
 
-function renderMetaDataLinks(value: any) {
+function renderMetaDataLinks(value: unknown) {
 
   const {data, success} = z.array(TagOrConceptValidation).safeParse(value)
   if(!success) {
@@ -128,7 +129,7 @@ export type FieldChange = {
   value: string | null
 }
 
-function printValue(value: any) {
+function printValue(value: unknown) {
   if (Array.isArray(value)) {
 
     if(value.filter(v => isContentfulEntryLink(v) || isContentfulAssetLink(v)).length > 0) {
@@ -150,12 +151,12 @@ function printValue(value: any) {
 
   const {success: isRichText} = LooseRichTextFieldValidation.safeParse(value)
   if (isRichText) {
-    return documentToReactComponents(value)
+    return documentToReactComponents(value as Document)
   }
   if (typeof value === 'object') {
     return <pre>{JSON.stringify(value, null, 2)}</pre>
   }
-  return <i>"{value}"</i>
+  return <i>{`"${value}"`}</i>
 }
 
 function badgeVariant(changeType: Operation['op']): BadgeVariant {

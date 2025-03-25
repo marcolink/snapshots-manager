@@ -1,6 +1,6 @@
 import {useMutation} from "@tanstack/react-query";
 import {printVersion} from "~/utils/change-version";
-import {EntryDataWithUser} from "~/types";
+import {PatchEntryWithUser} from "~/types";
 import {Patch} from "generate-json-patch";
 import {createFieldChange} from "~/utils/patch-utils";
 import {EditorAppSDK, SidebarAppSDK} from "@contentful/app-sdk";
@@ -16,7 +16,7 @@ export const useUpdateEntry = (sdk: EditorAppSDK | SidebarAppSDK | undefined ) =
       console.warn(error)
       sdk?.notifier.success(`Cherry-pick failed`)
     },
-    mutationFn: async (entry: EntryDataWithUser) => {
+    mutationFn: async (entry: PatchEntryWithUser) => {
       const patch = entry.patch as Patch
       const shouldExecute = await ModalLauncher.open(({ isShown, onClose }) => {
         return (

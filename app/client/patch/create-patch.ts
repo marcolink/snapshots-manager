@@ -1,12 +1,12 @@
 import {EntryProps} from "contentful-management";
-import {db} from "~/database";
-import {PatchTable, SelectEntry} from "~/database/schema";
+import {store} from "~/store";
+import {PatchTable, SelectEntry} from "~/store/schema";
 import {streamKeyForOperation} from "./../streams";
-import {createEntryPatch} from "~/utils/create-entry-patch";
 import {Patch} from "generate-json-patch";
-import {Params} from "./../types";
+import {Params, WebhookEventPayload, WebhookEventPayloadWithData} from "./../types";
 import {getRawEntry} from "../entry/get-raw-entry";
 import {upsertRawEntry} from "../entry/upsert-raw-entry";
+import {createEntryPatch} from "~/client/utils/create-entry-patch";
 
 export const createPatch = async (data: Params) => {
   const referenceEntry = (await getRawEntry({
@@ -22,28 +22,35 @@ export const createPatch = async (data: Params) => {
   let patch: Patch = []
   let rawEntry: EntryProps = source
 
+  const eventHasEntryPayload = isWebhookEventWithEntryPayload(data)
+
   // for operations that provide an entry payload, we can create a patch
-  if (
-    data.operation === 'save' ||
-    data.operation === 'auto_save' ||
-    data.operation === 'create' ||
-    data.operation === 'publish'
-  ) {
+  if (eventHasEntryPayload) {
     const target = data.raw;
     patch = createEntryPatch(source, target)
     rawEntry = target;
   }
 
-  return db.transaction(async (tx) => {
-    await upsertRawEntry({...data, version, raw: rawEntry}, tx)
+  const {space, environment, raw: {sys: {id: entry}}, operation, byUser} = data
+
+  return store.transaction(async (tx) => {
+    await upsertRawEntry({
+      space,
+      environment,
+      entry,
+      raw: rawEntry,
+      version,
+      // Fixing this will also fix the requirement to always update the raw entry
+      operation: operation as WebhookEventPayloadWithData['operation'],
+    }, tx)
     return tx.insert(PatchTable).values({
-      version: version,
-      space: data.space,
-      environment: data.environment,
-      entry: data.raw.sys.id,
-      operation: data.operation,
-      byUser: data.byUser,
-      patch: patch,
+      space,
+      environment,
+      entry,
+      version,
+      operation,
+      patch,
+      byUser,
     }).returning().execute();
   });
 }
@@ -59,4 +66,13 @@ function getDefaultReferenceEntry(data: Params): SelectEntry {
     raw: {...data.raw, fields: {}, metadata: {tags: []}},
     stream: streamKeyForOperation(data.operation)
   }
+}
+
+function isWebhookEventWithEntryPayload(webhookEvent: WebhookEventPayload): webhookEvent is WebhookEventPayloadWithData {
+  return [
+    'save',
+    'auto_save',
+    'create',
+    'publish'
+  ].includes(webhookEvent.operation)
 }

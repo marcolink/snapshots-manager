@@ -4,7 +4,7 @@ A contentful app that allows you to travel back in time and see how the world ha
 ![screenshot-01.png](assets/screenshot-01.png)
 
 ## How it works
-This app uses App Events (similar to webhooks) to listen for changes of entries in the contentful space. 
+This app uses [App Events](https://www.contentful.com/developers/docs/extensibility/app-framework/app-events/) (similar to webhooks) to listen for changes of entries in the contentful space. 
 When a change is detected, the app will create a patch for each change and store it in the data store. 
 This lets you scroll through the history of your content and see how it has evolved over time.
 
@@ -54,6 +54,20 @@ If we create a new patch entry for every event (`save`, `auto_save`, `delete`, `
 
 ![flow-diagram.png](assets/flow-diagram.png)
 
+### App Configuration
+#### Define Entry and Sidebar Location
+![screenshot-02.png](assets/screenshot-02.png)
+
+#### Define App Events
+![screenshot-03.png](assets/screenshot-03.png)
+> Provide the public url of the app with `/api/webhook` appended to it.
+
+### App Locations in Contentful
+#### Define Entry editor location
+![screenshot-04.png](assets/screenshot-04.png)
+
+#### Define Sidebar location
+![screenshot-05.png](assets/screenshot-05.png)
 ## Development
 
 Run the dev server:
