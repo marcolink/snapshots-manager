@@ -112,3 +112,6 @@ You can provide a postgres database connection string in the `.env` file (or via
 ### Drizzle Setup
 After setting the connection string, you must push your schema via `npx drizzle-kit push`. 
 Alternatively, you can also run `npx drizzle-kit migrate` to apply the schema via migrations.
+
+### App Template
+This app is bootstrapped with the [Contentful Remix App Template](https://github.com/contentful/apps/tree/master/examples/remix) (well, actually the template is grown out of this app).
