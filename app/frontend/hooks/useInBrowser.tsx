@@ -9,5 +9,7 @@ export function useInBrowser(func: () => void, dependencies: DependencyList = []
     } else {
       console.warn('This hook can only be used in the browser.');
     }
-  }, [isBrowser, dependencies]);
+    // Spreading is necessary to ensure correct matching behaviour.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isBrowser, ...dependencies]);
 }
