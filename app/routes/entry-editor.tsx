@@ -1,6 +1,5 @@
 import {LoaderFunctionArgs} from "@remix-run/node";
 import {Form, useLoaderData, useSubmit} from "@remix-run/react";
-import {toRecord} from "~/utils/toRecord";
 import {useWithContentfulUsers} from "~/frontend/hooks/useWithContentfulUsers";
 import {Changelog} from "~/frontend/components/Changelog";
 import {Box, Flex} from '@contentful/f36-core';
@@ -12,14 +11,19 @@ import {UpdateOnSysChange} from "~/frontend/components/UpdateOnSysChange";
 import {PatchEntry} from "~/shared/types";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
-  const q = toRecord(new URL(request.url).searchParams)
-  const stream = StreamKeyDec.catch(StreamKeys.publish).parse(q.stream)
+  const searchParams = new URL(request.url).searchParams
+  const stream = StreamKeyDec.catch(StreamKeys.publish).parse(searchParams.get('stream'))
+
+  const environment = searchParams.get('environmentAlias') || searchParams.get('environment')
+
+  if(!environment) {
+    return Response.json({error: 'No environment provided'}, {status: 400})
+  }
 
   const data = await client.patch.getMany({
     q: {
-      ...q,
-      environment: q.environmentAlias || q.environment,
-      // stream: stream,
+      ...searchParams,
+      environment,
     }, limit: 100
   })
   return Response.json({data, stream})
