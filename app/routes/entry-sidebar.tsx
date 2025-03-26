@@ -1,6 +1,5 @@
 import {LoaderFunctionArgs} from "@remix-run/node";
 import {Form, useLoaderData} from "@remix-run/react";
-import {toRecord} from "~/utils/toRecord";
 import {useContentfulAutoResizer} from "~/frontend/hooks/useContentfulAutoResizer";
 import {Note} from "@contentful/f36-note";
 import {useWithContentfulUsers} from "~/frontend/hooks/useWithContentfulUsers";
@@ -22,18 +21,27 @@ import {OperationsText} from "~/frontend/components/OperationsText";
 
 const MAX_VIEW_ITEMS = 50
 
+
 export const loader = async ({request}: LoaderFunctionArgs) => {
-  const q = toRecord(new URL(request.url).searchParams)
+  const searchParams = new URL(request.url).searchParams
+
+  const environment = searchParams.get('environmentAlias') || searchParams.get('environment')
+
+  if(!environment) {
+    return Response.json({error: 'No environment provided'}, {status: 400})
+  }
 
   return Response.json(await promiseHash({
     data: client.patch.getMany({
       q: {
-        ...q, environment: q.environmentAlias || q.environment
+        ...searchParams,
+        environment
       }, limit: MAX_VIEW_ITEMS
     }),
     metadata: client.patch.getCount({
       q: {
-        ...q, environment: q.environmentAlias || q.environment
+        ...searchParams,
+        environment
       }
     })
   }))
