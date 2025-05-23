@@ -34,7 +34,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.16.1",
+    "@remix-run/dev": "^2.16.7",
     "@remix-run/node": "^2.16.1",
     "@remix-run/react": "^2.16.1",
     "@testing-library/jest-dom": "^6.5.0",
