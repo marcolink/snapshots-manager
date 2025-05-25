@@ -4,37 +4,31 @@ import {useWithContentfulUsers} from "~/frontend/hooks/useWithContentfulUsers";
 import {Changelog} from "~/frontend/components/Changelog";
 import {Box, Flex} from '@contentful/f36-core';
 import {client} from "~/backend/client";
-import {StreamKeyDec, StreamKeys} from "~/shared/streams";
 import {ExistingSearchParams} from "~/frontend/components/ExistingSearchParams";
 import {UpdateOnSysChange} from "~/frontend/components/UpdateOnSysChange";
 
 import {PatchEntry} from "~/shared/types";
+import {parseURLSearchParams} from "~/validations/parse-url-search-params";
+import {ScopedQueryParams} from "~/backend/client/validations";
 
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const searchParams = new URL(request.url).searchParams
-  const stream = StreamKeyDec.catch(StreamKeys.publish).parse(searchParams.get('stream'))
+  try {
+    const parsedParams = parseURLSearchParams(ScopedQueryParams, searchParams)
+    const data = await client.patch.getMany({
+      query: parsedParams,
+      limit: 100
+    })
+    return Response.json({data})
 
-  const environment = searchParams.get('environmentAlias') || searchParams.get('environment')
-
-  if(!environment) {
-    return Response.json({error: 'No environment provided'}, {status: 400})
+  } catch (error) {
+    Response.json({error}, {status: 400})
   }
-
-  const data = await client.patch.getMany({
-    q: {
-      ...searchParams,
-      environment,
-    }, limit: 100
-  })
-  return Response.json({data, stream})
 }
 
 export default function Page() {
   const {data: entries} = useLoaderData<typeof loader>()
-  const {
-    data, isUsersLoading,
-  } = useWithContentfulUsers<PatchEntry>(entries)
-
+  const {data, isUsersLoading} = useWithContentfulUsers<PatchEntry>(entries)
   const submit = useSubmit()
 
   return (

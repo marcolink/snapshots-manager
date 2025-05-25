@@ -1,21 +1,19 @@
 import {store} from "~/backend/store";
 import {PatchTable} from "~/backend/store/schema";
-import {and, desc, eq, inArray} from "drizzle-orm";
-import {Streams} from "~/shared/streams";
-import {StreamsType} from "~/shared/types";
+import {desc} from "drizzle-orm";
+import {ScopedQueryParams, ScopedQueryParamsType} from "~/backend/client/validations";
+import {spaceEnvEntryFilter} from "~/backend/client/queries/space-env-entry-filter";
+
+type QueryParamsType = ScopedQueryParamsType
 
 type GetEntriesParams = {
-  q?: {
-    space?: string,
-    environment?: string,
-    entry?: string,
-    stream?: StreamsType,
-  }
+  query: QueryParamsType
   limit?: number
 }
 
-export const getPatches = async ({q, limit = 100}: GetEntriesParams) => {
-  const query = store
+export const getPatches = async ({query, limit = 100}: GetEntriesParams) => {
+  const ids = ScopedQueryParams.parse(query);
+  return store
     .select({
       id: PatchTable.id,
       byUser: PatchTable.byUser,
@@ -29,19 +27,11 @@ export const getPatches = async ({q, limit = 100}: GetEntriesParams) => {
     })
     .from(PatchTable)
     .limit(limit)
-    .orderBy(desc(PatchTable.createdAt))
-
-  if (q) {
-
-    query.where(
-      and(
-        q.space ? eq(PatchTable.space, q.space) : undefined,
-        q.environment ? eq(PatchTable.environment, q.environment) : undefined,
-        q.entry ? eq(PatchTable.entry, q.entry) : undefined,
-        q.stream ? inArray(PatchTable.operation, Streams[q.stream]) : undefined,
-      )
+    .orderBy(
+      desc(PatchTable.createdAt)
     )
-  }
-
-  return query.execute();
+    .where(
+      spaceEnvEntryFilter(ids)
+    )
+    .execute();
 }

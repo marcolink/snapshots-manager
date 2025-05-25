@@ -18,33 +18,27 @@ import {useInBrowserSdk} from "~/frontend/hooks/useInBrowserSdk";
 
 import {PatchEntry} from "~/shared/types";
 import {OperationsText} from "~/frontend/components/OperationsText";
+import {parseURLSearchParams} from "~/validations/parse-url-search-params";
+import {ScopedQueryParams} from "~/backend/client/validations";
 
 const MAX_VIEW_ITEMS = 50
 
-
 export const loader = async ({request}: LoaderFunctionArgs) => {
   const searchParams = new URL(request.url).searchParams
-
-  const environment = searchParams.get('environmentAlias') || searchParams.get('environment')
-
-  if(!environment) {
-    return Response.json({error: 'No environment provided'}, {status: 400})
+  try {
+    const parsedParams = parseURLSearchParams(ScopedQueryParams, searchParams)
+    return Response.json(await promiseHash({
+      data: client.patch.getMany({
+        query: parsedParams,
+        limit: MAX_VIEW_ITEMS
+      }),
+      metadata: client.patch.getCount({
+        query: parsedParams
+      })
+    }))
+  } catch (error) {
+    Response.json({error}, {status: 400})
   }
-
-  return Response.json(await promiseHash({
-    data: client.patch.getMany({
-      q: {
-        ...searchParams,
-        environment
-      }, limit: MAX_VIEW_ITEMS
-    }),
-    metadata: client.patch.getCount({
-      q: {
-        ...searchParams,
-        environment
-      }
-    })
-  }))
 }
 
 export default function EntrySidebar() {
