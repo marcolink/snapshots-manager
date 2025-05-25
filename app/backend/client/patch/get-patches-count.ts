@@ -1,33 +1,20 @@
 import {store} from "~/backend/store";
 import {PatchTable} from "~/backend/store/schema";
-import {and, count, eq, inArray} from "drizzle-orm";
-import {Streams} from "~/shared/streams";
-import {StreamsType} from "~/shared/types";
+import {count} from "drizzle-orm";
+import {ScopedQueryParams, ScopedQueryParamsType} from "~/backend/client/validations";
+import {spaceEnvEntryFilter} from "~/backend/client/queries/space-env-entry-filter";
 
 type GetEntriesParams = {
-  q?: {
-    space?: string,
-    environment?: string,
-    entry?: string,
-    stream?: StreamsType,
-  }
+  query: ScopedQueryParamsType
 }
 
-export const getPatchesCount = async ({q}: GetEntriesParams) => {
-  const query = store
+export const getPatchesCount = async ({query}: GetEntriesParams) => {
+  const ids = ScopedQueryParams.parse(query);
+  const dbQuery = store
     .select({count: count()})
     .from(PatchTable)
-
-  if (q) {
-    query.where(
-      and(
-        q.space ? eq(PatchTable.space, q.space) : undefined,
-        q.environment ? eq(PatchTable.environment, q.environment) : undefined,
-        q.entry ? eq(PatchTable.entry, q.entry) : undefined,
-        q.stream ? inArray(PatchTable.operation, Streams[q.stream]) : undefined,
-      )
-    )
-  }
-
-  return (await query.execute())[0];
+    .where(
+      spaceEnvEntryFilter(ids)
+    );
+  return (await dbQuery.execute())[0];
 }
