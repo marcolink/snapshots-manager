@@ -20,7 +20,7 @@
     "@contentful/f36-multiselect": "^4.24.0",
     "@contentful/f36-progress-stepper": "^4.0.0-alpha.0",
     "@contentful/rich-text-react-renderer": "^15.22.10",
-    "@remix-run/serve": "^2.11.2",
+    "@remix-run/serve": "^2.16.7",
     "@tanstack/react-query": "^5.52.2",
     "contentful-management": "^11.31.8",
     "dotenv": "^16.4.5",
@@ -34,9 +34,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.16.1",
+    "@remix-run/dev": "^2.16.7",
     "@remix-run/node": "^2.16.7",
-    "@remix-run/react": "^2.16.1",
+    "@remix-run/react": "^2.16.7",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
     "@types/pg": "^8.11.11",
