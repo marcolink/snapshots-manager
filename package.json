@@ -28,7 +28,7 @@
     "generate-json-patch": "^1.2.4",
     "isbot": "^4.1.0",
     "pg": "^8.13.1",
-    "react": "^18.2.0",
+    "react": "^19.1.0",
     "react-dom": "^18.2.0",
     "remix-utils": "^7.6.0",
     "zod": "^3.23.8"
@@ -40,7 +40,7 @@
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
     "@types/pg": "^8.11.11",
-    "@types/react": "^18.2.20",
+    "@types/react": "^19.1.6",
     "@types/react-dom": "^18.2.7",
     "@typescript-eslint/eslint-plugin": "^6.7.4",
     "@typescript-eslint/parser": "^6.7.4",
