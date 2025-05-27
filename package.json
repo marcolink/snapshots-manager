@@ -21,7 +21,7 @@
     "@contentful/f36-progress-stepper": "^4.0.0-alpha.0",
     "@contentful/rich-text-react-renderer": "^15.22.10",
     "@remix-run/serve": "^2.16.7",
-    "@tanstack/react-query": "^5.52.2",
+    "@tanstack/react-query": "^5.77.2",
     "contentful-management": "^11.31.8",
     "dotenv": "^16.4.5",
     "drizzle-orm": "^0.33.0",
