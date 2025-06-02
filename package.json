@@ -36,7 +36,7 @@
   "devDependencies": {
     "@remix-run/dev": "^2.16.7",
     "@remix-run/node": "^2.16.7",
-    "@remix-run/react": "^2.16.7",
+    "@remix-run/react": "^2.16.8",
     "@testing-library/jest-dom": "^6.5.0",
     "@testing-library/react": "^16.0.1",
     "@types/pg": "^8.11.11",
