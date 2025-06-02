@@ -24,7 +24,7 @@
     "@tanstack/react-query": "^5.77.2",
     "contentful-management": "^11.31.8",
     "dotenv": "^16.4.5",
-    "drizzle-orm": "^0.33.0",
+    "drizzle-orm": "^0.44.1",
     "generate-json-patch": "^1.2.4",
     "isbot": "^4.1.0",
     "pg": "^8.13.1",
