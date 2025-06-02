@@ -14,7 +14,7 @@
     "db-view": "drizzle-kit studio"
   },
   "dependencies": {
-    "@contentful/app-sdk": "^4.29.1",
+    "@contentful/app-sdk": "^4.29.7",
     "@contentful/f36-components": "^4.80.3",
     "@contentful/f36-icons": "^4.29.0",
     "@contentful/f36-multiselect": "^4.24.0",
