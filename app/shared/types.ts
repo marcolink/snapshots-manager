@@ -1,7 +1,7 @@
 import {EntryProps, UserProps} from "contentful-management";
 import {StreamKeys, Streams} from "~/shared/streams";
-import {Jsonify} from "@remix-run/server-runtime/dist/jsonify";
 import {SelectPatch} from "~/backend/store/schema";
+import {Jsonify} from "@remix-run/server-runtime/dist/jsonify";
 
 export type WebhookEvent =
   | 'auto_save'

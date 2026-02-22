@@ -17,7 +17,7 @@ export function EntryDetailsModal({entry, onClose, isShown}: Props) {
         <>
           <Modal.Header
             title={`${printVersion(entry)}`}
-            subtitle={formatRelativeDateTime(entry.createdAt)}
+            // subtitle={formatRelativeDateTime(entry.createdAt)}
             onClose={onClose}
           />
           <Modal.Content>

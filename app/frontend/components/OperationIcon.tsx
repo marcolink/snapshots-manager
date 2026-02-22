@@ -59,17 +59,18 @@ export function operationBackgroundColorClass(operation: WebhookEvent) {
 }
 
 export function renderOperationIcon(entry: PatchEntryWithUser, tooltip: boolean = false) {
-  const tooltipContent = `${PastAction[entry.operation]} ${printVersion(entry)}`
+  const operation = entry.operation as WebhookEvent;
+  const tooltipContent = `${PastAction[operation]} ${printVersion(entry)}`
   const component = (
     <ConditionalWrapper
       condition={tooltip}
       wrapper={children => <Tooltip content={tooltipContent}>{children}</Tooltip>}>
-      <OperationIcon operation={entry.operation}/>
+      <OperationIcon operation={operation}/>
     </ConditionalWrapper>
   )
 
   return {
     component: component,
-    className: operationBackgroundColorClass(entry.operation)
+    className: operationBackgroundColorClass(operation)
   }
 }

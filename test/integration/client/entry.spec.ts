@@ -26,13 +26,13 @@ describe('Upsert raw Entry', async () => {
       byUser: 'test-user'
     }
 
-    // @ts-expect-error to lazy to fix
+    // @ts-expect-error - we want to test that the function can handle missing fields for certain operations
     await upsertRawEntry(payload);
 
     const updatedEntryPayload = deepClone(payload)
     updatedEntryPayload.raw.sys.revision = 2
 
-    // @ts-expect-error to lazy to fix
+    // @ts-expect-error - we want to test that the function can handle missing fields for certain operations
     await upsertRawEntry({...updatedEntryPayload, operation: 'auto_save'});
 
     const response = await getRawEntry({

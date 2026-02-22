@@ -18,7 +18,7 @@ export const useUpdateEntry = (sdk: EditorAppSDK | SidebarAppSDK | undefined) =>
     },
     mutationFn: async (entry: PatchEntryWithUser) => {
       const patch = entry.patch as Patch
-      const shouldExecute = await ModalLauncher.open(({isShown, onClose}) => {
+      const shouldExecute = await ModalLauncher.open(({isShown, onClose}: {isShown: boolean; onClose: (value: boolean) => void}) => {
         return (
           <ModalConfirm
             title="Apply this change on top of the current entry?"

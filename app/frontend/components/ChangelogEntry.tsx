@@ -9,7 +9,7 @@ import {Patch} from "generate-json-patch";
 import {Tooltip} from "@contentful/f36-tooltip";
 import {IconButton} from "@contentful/f36-button";
 import {ArrowUpwardIcon, PreviewIcon} from "@contentful/f36-icons";
-import {css} from "emotion";
+import {css} from "@emotion/css";
 import tokens from "@contentful/f36-tokens";
 import {Conditional} from "~/frontend/components/Conditional";
 import {Note} from "@contentful/f36-note";
