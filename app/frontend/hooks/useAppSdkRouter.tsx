@@ -1,5 +1,5 @@
 import {useInBrowser} from '~/frontend/hooks/useInBrowser';
-import {useLocation, useNavigate} from 'react-router';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {useInBrowserSdk} from '~/frontend/hooks/useInBrowserSdk';
 import * as AppSDK from '@contentful/app-sdk';
 

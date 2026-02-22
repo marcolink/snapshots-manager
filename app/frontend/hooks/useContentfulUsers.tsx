@@ -9,7 +9,6 @@ export function useContentfulUsers(userIds: string[]) {
     queryFn: async () => {
       const result = await cma?.user.getManyForSpace({
         spaceId: sdk?.ids.space,
-        organizationId: sdk?.ids.organization,
         query: {
           'sys.id[in]': userIds,
         },

@@ -72,12 +72,12 @@ If we create a new patch entry for every event (`save`, `auto_save`, `delete`, `
 
 Run the dev server:
 ```shellscript
-npm run dev
+pnpm dev
 ```
 
 View the database:
 ```shellscript
-npm run db-view
+pnpm db-view
 ```
 
 ### Run Locally
